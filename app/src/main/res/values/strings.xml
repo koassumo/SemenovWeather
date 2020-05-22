@@ -12,4 +12,11 @@
     <string name="menu_slideshow">Slideshow</string>
 
     <string name="home_second">Home Second</string>
+    <string name="region">Minsk</string>
+    <string name="button_change_town">change</string>
+    <string name="button_options_select_title">options</string>
+    <string name="desc">desc</string>
+    <string name="pressure_data">300 mm</string>
+    <string name="temperature_data">+33</string>
+    <string name="wind_data">50 m/s</string>
 </resources>
