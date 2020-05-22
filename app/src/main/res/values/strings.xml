@@ -19,4 +19,9 @@
     <string name="pressure_data">300 mm</string>
     <string name="temperature_data">+33</string>
     <string name="wind_data">50 m/s</string>
+    <string name="button_back">back</string>
+    <string name="button_help">help</string>
+    <string name="town_edit_text_hint">Type town</string>
+    <string name="checkbox_wind_title">wind</string>
+    <string name="checkbox_pressure_title">pressure</string>
 </resources>
