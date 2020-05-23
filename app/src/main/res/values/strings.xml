@@ -24,4 +24,7 @@
     <string name="town_edit_text_hint">Type town</string>
     <string name="checkbox_wind_title">wind</string>
     <string name="checkbox_pressure_title">pressure</string>
+    <string name="button_go_url">go Яndex Weather</string>
+
+    <string name="yandex_link">https://yandex.ru/pogoda/</string>
 </resources>
