@@ -136,7 +136,12 @@ public class HomeFragment extends Fragment {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            renderWeather(jsonObject);
+                            RenderWeatherData renderWeather = new RenderWeatherData(jsonObject);
+                            try {
+                                townTextView.setText(renderWeather.getPlaceName());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
                     });
                 }
@@ -144,110 +149,110 @@ public class HomeFragment extends Fragment {
         }.start();
     }
 
-    private void renderWeather(JSONObject jsonObject) {
-        //Log.d(LOG_TAG, "json: " + jsonObject.toString());
-        try {
-            JSONObject details = jsonObject.getJSONArray("weather").getJSONObject(0);
-            JSONObject main = jsonObject.getJSONObject("main");
-
-            setPlaceName(jsonObject);
-            setDetails(details, main);
-            setCurrentTemp(main);
-            setUpdatedText(jsonObject);
-            setWeatherIcon(details.getInt("id"),
-                    jsonObject.getJSONObject("sys").getLong("sunrise") * 1000,
-                    jsonObject.getJSONObject("sys").getLong("sunset") * 1000);
-        } catch (Exception exc) {
-            exc.printStackTrace();
-            //Log.e(LOG_TAG, "One or more fields not found in the JSON data");
-        }
-    }
-
-
-    private void setPlaceName(JSONObject jsonObject) throws JSONException {
-        String cityText = jsonObject.getString("name").toUpperCase() + ", "
-                + jsonObject.getJSONObject("sys").getString("country");
-        townTextView.setText(cityText);
-    }
-
-    private void setDetails(JSONObject details, JSONObject main) throws JSONException {
-        String detailsText = details.getString("description").toUpperCase() + "\n" + main.getString("pressure") + "hPa";
-        pressureTextView.setText(detailsText);
-    }
-
-    private void setCurrentTemp(JSONObject main) throws JSONException {
-        String currentTextText = String.format(Locale.getDefault(), "%.2f", main.getDouble("temp"));
-        temperatureTextView.setText(currentTextText);
-    }
-
-    private void setUpdatedText(JSONObject jsonObject) throws JSONException {
-        DateFormat dateFormat = DateFormat.getDateTimeInstance();
-        String updateOn = dateFormat.format(new Date(jsonObject.getLong("dt") * 1000));
-        String updatedText = "Last update: " + updateOn;
-        windTextView.setText("100");
-    }
-
-    private void setWeatherIcon(int id, long sunrise, long sunset) {
-        String icon = "";
-        String skyPictureName = "snow_white";
-
-        switch (id / 100) {
-            case 2: {
-                icon = getString(R.string.weather_thunder); skyPictureName = "z_thunder_white";
-                break;
-            }
-            case 3: {
-                if (id < 302) {
-                    icon = getString(R.string.weather_drizzle); skyPictureName = "z_rain_light_white";
-                } else {
-                    icon = getString(R.string.weather_drizzle); skyPictureName = "z_rain_shower_white";
-                }
-                break;
-            }
-            case 5: {
-                if (id < 502) {
-                    icon = getString(R.string.weather_rainy); skyPictureName = "z_rain_light_white";
-                } else {
-                    icon = getString(R.string.weather_rainy); skyPictureName = "z_rain_shower_white";
-                }
-                break;
-            }
-            case 6: {
-                icon = getString(R.string.weather_snowy); skyPictureName = "z_snow_white";
-                break;
-            }
-            case 7: {
-                icon = getString(R.string.weather_foggy); skyPictureName = "z_foggy_white";
-                break;
-            }
-            case 8: {
-                if (id > 802) {
-                    icon = getString(R.string.weather_foggy); skyPictureName = "z_cloud_overcast_white";
-                    break;
-                }
-                if (id == 802) {
-                    icon = getString(R.string.weather_foggy); skyPictureName = "z_cloud_broken_white";
-                    break;
-                }
-                if (id == 801 ) {
-                    long currentTime = new Date().getTime();
-                    if(currentTime >= sunrise && currentTime < sunset) {
-                        icon = "\u2600"; skyPictureName = "z_cloud_few_white";
-                    } else {
-                        icon = getString(R.string.weather_clear_night); skyPictureName = "z_night_cloud_few_white";
-                    }
-                    break;
-                }
-                if (id == 800 ) {
-                    long currentTime = new Date().getTime();
-                    if(currentTime >= sunrise && currentTime < sunset) {
-                        icon = "\u2600"; skyPictureName = "z_clear_sky_white";
-                    } else {
-                        icon = getString(R.string.weather_clear_night); skyPictureName = "z_night_clear_sky_white";
-                    }
-                }
-            }
-        }
-        skyTexView.setText(id + ", " + icon);
-    }
+//    private void renderWeather(JSONObject jsonObject) {
+//        //Log.d(LOG_TAG, "json: " + jsonObject.toString());
+//        try {
+//            JSONObject details = jsonObject.getJSONArray("weather").getJSONObject(0);
+//            JSONObject main = jsonObject.getJSONObject("main");
+//
+//            setPlaceName(jsonObject);
+//            setDetails(details, main);
+//            setCurrentTemp(main);
+//            setUpdatedText(jsonObject);
+//            setWeatherIcon(details.getInt("id"),
+//                    jsonObject.getJSONObject("sys").getLong("sunrise") * 1000,
+//                    jsonObject.getJSONObject("sys").getLong("sunset") * 1000);
+//        } catch (Exception exc) {
+//            exc.printStackTrace();
+//            //Log.e(LOG_TAG, "One or more fields not found in the JSON data");
+//        }
+//    }
+//
+//
+//    private void setPlaceName(JSONObject jsonObject) throws JSONException {
+//        String cityText = jsonObject.getString("name").toUpperCase() + ", "
+//                + jsonObject.getJSONObject("sys").getString("country");
+//        townTextView.setText(cityText);
+//    }
+//
+//    private void setDetails(JSONObject details, JSONObject main) throws JSONException {
+//        String detailsText = details.getString("description").toUpperCase() + "\n" + main.getString("pressure") + "hPa";
+//        pressureTextView.setText(detailsText);
+//    }
+//
+//    private void setCurrentTemp(JSONObject main) throws JSONException {
+//        String currentTextText = String.format(Locale.getDefault(), "%.2f", main.getDouble("temp"));
+//        temperatureTextView.setText(currentTextText);
+//    }
+//
+//    private void setUpdatedText(JSONObject jsonObject) throws JSONException {
+//        DateFormat dateFormat = DateFormat.getDateTimeInstance();
+//        String updateOn = dateFormat.format(new Date(jsonObject.getLong("dt") * 1000));
+//        String updatedText = "Last update: " + updateOn;
+//        windTextView.setText("100");
+//    }
+//
+//    private void setWeatherIcon(int id, long sunrise, long sunset) {
+//        String icon = "";
+//        String skyPictureName = "snow_white";
+//
+//        switch (id / 100) {
+//            case 2: {
+//                icon = getString(R.string.weather_thunder); skyPictureName = "z_thunder_white";
+//                break;
+//            }
+//            case 3: {
+//                if (id < 302) {
+//                    icon = getString(R.string.weather_drizzle); skyPictureName = "z_rain_light_white";
+//                } else {
+//                    icon = getString(R.string.weather_drizzle); skyPictureName = "z_rain_shower_white";
+//                }
+//                break;
+//            }
+//            case 5: {
+//                if (id < 502) {
+//                    icon = getString(R.string.weather_rainy); skyPictureName = "z_rain_light_white";
+//                } else {
+//                    icon = getString(R.string.weather_rainy); skyPictureName = "z_rain_shower_white";
+//                }
+//                break;
+//            }
+//            case 6: {
+//                icon = getString(R.string.weather_snowy); skyPictureName = "z_snow_white";
+//                break;
+//            }
+//            case 7: {
+//                icon = getString(R.string.weather_foggy); skyPictureName = "z_foggy_white";
+//                break;
+//            }
+//            case 8: {
+//                if (id > 802) {
+//                    icon = getString(R.string.weather_foggy); skyPictureName = "z_cloud_overcast_white";
+//                    break;
+//                }
+//                if (id == 802) {
+//                    icon = getString(R.string.weather_foggy); skyPictureName = "z_cloud_broken_white";
+//                    break;
+//                }
+//                if (id == 801 ) {
+//                    long currentTime = new Date().getTime();
+//                    if(currentTime >= sunrise && currentTime < sunset) {
+//                        icon = "\u2600"; skyPictureName = "z_cloud_few_white";
+//                    } else {
+//                        icon = getString(R.string.weather_clear_night); skyPictureName = "z_night_cloud_few_white";
+//                    }
+//                    break;
+//                }
+//                if (id == 800 ) {
+//                    long currentTime = new Date().getTime();
+//                    if(currentTime >= sunrise && currentTime < sunset) {
+//                        icon = "\u2600"; skyPictureName = "z_clear_sky_white";
+//                    } else {
+//                        icon = getString(R.string.weather_clear_night); skyPictureName = "z_night_clear_sky_white";
+//                    }
+//                }
+//            }
+//        }
+//        skyTexView.setText(id + ", " + icon);
+//    }
 }
