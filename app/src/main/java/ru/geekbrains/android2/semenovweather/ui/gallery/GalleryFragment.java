@@ -16,9 +16,12 @@ import ru.geekbrains.android2.semenovweather.R;
 
 public class GalleryFragment extends Fragment {
 
+    TextView text;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
+        text = root.findViewById(R.id.townSelectEditText);
         return root;
     }
 }
