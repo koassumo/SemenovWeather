@@ -29,16 +29,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/townTextView" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/goOptionsSelectActivityBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="236dp"
-        android:layout_marginEnd="28dp"
-        android:text="@string/button_options_select_title"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+<!--    кнопка временно на реконструкции (пока не подключил переключение между фрагментами в Drawer) -->
+<!--    <com.google.android.material.button.MaterialButton-->
+<!--        android:id="@+id/goOptionsSelectActivityBtn"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="236dp"-->
+<!--        android:layout_marginEnd="28dp"-->
+<!--        android:text="@string/button_options_select_title"-->
+<!--        android:textSize="12sp"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
 
     <ImageView
         android:id="@+id/skyImageView"

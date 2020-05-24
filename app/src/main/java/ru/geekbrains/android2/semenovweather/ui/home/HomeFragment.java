@@ -25,6 +25,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import ru.geekbrains.android2.semenovweather.MainActivity;
 import ru.geekbrains.android2.semenovweather.R;
 
 public class HomeFragment extends Fragment {
@@ -72,18 +73,24 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // Создаем билдер и передаем контекст приложения
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()); // (MainActivity.this) работать отказался
                 // Вытащим макет диалога
                 final View contentView = getLayoutInflater().inflate(R.layout.alert_dialog_to_know_town, null);
-                // в билдере указываем заголовок окна (можно указывать как ресурс, так и строку)
-                builder.setTitle("Введите название города")
+                // в билдере указываем заголовок окна (можно указывать как ресурс R.string., так и строку)
+                builder.setTitle("Город")
                         // Установим макет диалога (можно устанавливать любой view)
+                        .setMessage("Введите название города")
+                        // можно указать и пиктограмму
+                        .setIcon(R.mipmap.ic_launcher_round)
                         .setView(contentView)
+                        // запре на клик вне окна и на выход кнопкой back
+                        .setCancelable(false)
+                        // устанавливаем кнопку (название кнопки также можно задавать строкой)
                         .setPositiveButton("Готово", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 EditText editText = contentView.findViewById(R.id.editText);
-                                Toast.makeText(getActivity(), String.format("Введено: %s", editText.getText().toString()), Toast.LENGTH_SHORT)
+                                Toast.makeText(getActivity(), String.format("Введен город: %s", editText.getText().toString()), Toast.LENGTH_SHORT)
                                         .show();
                                 townTextView.setText(editText.getText().toString());
                                 updateWeatherData(editText.getText().toString());
@@ -96,19 +103,12 @@ public class HomeFragment extends Fragment {
     }
 
     public void showAlertDialog() {
-        // Создаем билдер и передаем контекст приложения
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        // в билдере указываем заголовок окна (можно указывать как ресурс, так и строку)
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()); // (MainActivity.this) работать отказался
         builder.setTitle(R.string.exclamation)
-                // указываем сообщение в окне (также есть вариант со строковым параметром)
                 .setMessage(R.string.press_button)
-                // можно указать и пиктограмму
                 .setIcon(R.mipmap.ic_launcher_round)
-                // из этого окна нельзя выйти кнопкой back
                 .setCancelable(false)
-                // устанавливаем кнопку (название кнопки также можно задавать строкой)
                 .setPositiveButton(R.string.button,
-                        // Ставим слушатель, нажатие будем обрабатывать
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 Toast.makeText(getActivity(), "Кнопка нажата", Toast.LENGTH_SHORT).show();
