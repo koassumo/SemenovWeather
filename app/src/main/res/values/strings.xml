@@ -2,14 +2,14 @@
     <string name="app_name">SemenovWeather</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_title">Semenov Weather</string>
+    <string name="nav_header_subtitle">0770407@gmail.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
     <string name="menu_home">Home</string>
-    <string name="menu_gallery">Gallery</string>
-    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_gallery">Select options</string>
+    <string name="menu_slideshow">Help</string>
 
     <string name="home_second">Home Second</string>
     <string name="region">Minsk</string>
@@ -19,4 +19,12 @@
     <string name="pressure_data">300 mm</string>
     <string name="temperature_data">+33</string>
     <string name="wind_data">50 m/s</string>
+    <string name="button_back">back</string>
+    <string name="button_help">help</string>
+    <string name="town_edit_text_hint">Type town</string>
+    <string name="checkbox_wind_title">wind</string>
+    <string name="checkbox_pressure_title">pressure</string>
+    <string name="button_go_url">go Яndex Weather</string>
+
+    <string name="yandex_link">https://yandex.ru/pogoda/</string>
 </resources>
