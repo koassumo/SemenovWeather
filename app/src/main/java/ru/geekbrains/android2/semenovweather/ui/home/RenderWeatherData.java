@@ -10,19 +10,20 @@ import java.util.Locale;
 public class RenderWeatherData {
 
     JSONObject jsonObject;
-    JSONObject details;
+    JSONObject weather;
     JSONObject main;
+    JSONObject wind;
+    JSONObject sys;
 
     public RenderWeatherData(JSONObject jsonObject) {
         //Log.d(LOG_TAG, "json: " + jsonObject.toString());
         try {
             this.jsonObject = jsonObject;
-            details = jsonObject.getJSONArray("weather").getJSONObject(0);
+            weather = jsonObject.getJSONArray("weather").getJSONObject(0);
             main = jsonObject.getJSONObject("main");
+            wind = jsonObject.getJSONObject("wind");
+            sys = jsonObject.getJSONObject("sys");
 
-//            setPlaceName(jsonObject);
-//            setDetails(details, main);
-//            setCurrentTemp(main);
 //            setUpdatedText(jsonObject);
 //            setWeatherIcon(details.getInt("id"),
 //                    jsonObject.getJSONObject("sys").getLong("sunrise") * 1000,
@@ -35,16 +36,19 @@ public class RenderWeatherData {
 
 
     public String getPlaceName() throws JSONException {
-        return jsonObject.getString("name").toUpperCase() + ", "
-                + jsonObject.getJSONObject("sys").getString("country");
+        return jsonObject.getString("name").toUpperCase() + ", " + jsonObject.getJSONObject("sys").getString("country");
+    }
+
+    public String getCurrentTemp() throws JSONException {
+        return String.format(Locale.getDefault(), "%.2f", main.getDouble("temp"));
     }
 
     public String getPressure() throws JSONException {
-        return details.getString("description").toUpperCase() + "\n" + main.getString("pressure") + "hPa";
+        return weather.getString("description").toUpperCase() + "\n" + main.getString("pressure") + " hPa";
     }
 
-    private String  getCurrentTemp() throws JSONException {
-        return String.format(Locale.getDefault(), "%.2f", main.getDouble("temp"));
+    public String getWind() throws JSONException {
+        return wind.getString("speed") + " m/s";
     }
 //
 //    private void setUpdatedText(JSONObject jsonObject) throws JSONException {

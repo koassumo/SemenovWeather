@@ -139,6 +139,9 @@ public class HomeFragment extends Fragment {
                             RenderWeatherData renderWeather = new RenderWeatherData(jsonObject);
                             try {
                                 townTextView.setText(renderWeather.getPlaceName());
+                                temperatureTextView.setText(renderWeather.getCurrentTemp());
+                                pressureTextView.setText(renderWeather.getPressure());
+                                windTextView.setText(renderWeather.getWind());
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -169,11 +172,7 @@ public class HomeFragment extends Fragment {
 //    }
 //
 //
-//    private void setPlaceName(JSONObject jsonObject) throws JSONException {
-//        String cityText = jsonObject.getString("name").toUpperCase() + ", "
-//                + jsonObject.getJSONObject("sys").getString("country");
-//        townTextView.setText(cityText);
-//    }
+
 //
 //    private void setDetails(JSONObject details, JSONObject main) throws JSONException {
 //        String detailsText = details.getString("description").toUpperCase() + "\n" + main.getString("pressure") + "hPa";
