@@ -1,14 +1,11 @@
 package ru.geekbrains.android2.semenovweather.ui.home;
 
-import android.widget.Toast;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import ru.geekbrains.android2.semenovweather.R;
 
@@ -21,24 +18,16 @@ public class RenderWeatherData {
     JSONObject sys;
 
     public RenderWeatherData(JSONObject jsonObject) {
-        //Log.d(LOG_TAG, "json: " + jsonObject.toString());
         try {
             this.jsonObject = jsonObject;
             weather = jsonObject.getJSONArray("weather").getJSONObject(0);
             main = jsonObject.getJSONObject("main");
             wind = jsonObject.getJSONObject("wind");
             sys = jsonObject.getJSONObject("sys");
-
-//            setUpdatedText(jsonObject);
-//            setWeatherIcon(details.getInt("id"),
-//                    jsonObject.getJSONObject("sys").getLong("sunrise") * 1000,
-//                    jsonObject.getJSONObject("sys").getLong("sunset") * 1000);
         } catch (Exception exc) {
             exc.printStackTrace();
-            //Log.e(LOG_TAG, "One or more fields not found in the JSON data");
         }
     }
-
 
     public String getPlaceName() throws JSONException {
         return jsonObject.getString("name") + ", " + jsonObject.getJSONObject("sys").getString("country");
@@ -64,8 +53,6 @@ public class RenderWeatherData {
         String updateOn = dateFormat.format(new Date(jsonObject.getLong("dt") * 1000));
         return  weather.getString("description").toUpperCase() + "\n" + "Last update: " + updateOn;
     }
-
-
 
     public String getSkyImage () throws JSONException {
         int id = weather.getInt("id");
@@ -131,5 +118,4 @@ public class RenderWeatherData {
         }
         return skyPictureName;
     }
-
 }

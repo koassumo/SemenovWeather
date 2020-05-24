@@ -141,7 +141,6 @@ public class HomeFragment extends Fragment {
                                 pressureTextView.setText(renderWeather.getPressure());
                                 windTextView.setText(renderWeather.getWind());
                                 lastUpdateTextView.setText(renderWeather.getTimeUpdatedText());
-
                                 Resources res = getResources();
                                 int resID = res.getIdentifier(renderWeather.getSkyImage(), "drawable", getContext().getPackageName());
                                 skyImageView.setImageResource(resID);
@@ -154,6 +153,4 @@ public class HomeFragment extends Fragment {
             }
         }.start();
     }
-
-
 }
