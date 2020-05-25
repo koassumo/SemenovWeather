@@ -34,10 +34,8 @@ public class RenderWeatherData {
     }
 
     public String getCurrentTemp() throws JSONException {
-        DecimalFormat df = new DecimalFormat("0.0");
-        String temperature = df.format(main.getDouble("temp"));
-        temperature = (Double.parseDouble(temperature)>0) ? "+" + temperature : temperature;
-        return temperature;
+        long temperature = main.getLong("temp");
+        return (temperature > 0) ? "+" + temperature : "" + temperature;
     }
 
     public String getPressure() throws JSONException {

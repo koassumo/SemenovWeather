@@ -138,6 +138,8 @@ public class HomeFragment extends Fragment {
                             try {
                                 townTextView.setText(renderWeather.getPlaceName());
                                 temperatureTextView.setText(renderWeather.getCurrentTemp());
+                                Toast.makeText(getActivity(), String.format("Введен город: %s", renderWeather.getCurrentTemp()), Toast.LENGTH_SHORT)
+                                        .show();
                                 pressureTextView.setText(renderWeather.getPressure());
                                 windTextView.setText(renderWeather.getWind());
                                 lastUpdateTextView.setText(renderWeather.getTimeUpdatedText());
