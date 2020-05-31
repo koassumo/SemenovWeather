@@ -21,7 +21,15 @@ import androidx.fragment.app.Fragment;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import ru.geekbrains.android2.semenovweather.R;
+import ru.geekbrains.android2.semenovweather.ui.home.data.WeatherRequestRestModel;
 
 public class HomeFragment extends Fragment {
 
@@ -120,43 +128,120 @@ public class HomeFragment extends Fragment {
         alert.show();
     }
 
-    private void updateWeatherData(final String town) {
-        new Thread() {
-            @Override
-            public void run() {
-                final JSONObject jsonObject = WeatherDataLoader.getJSONData(town);
-                if(jsonObject == null) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            showAlertDialog();
-                            Toast.makeText(getContext(), R.string.place_not_found,
-                                    Toast.LENGTH_LONG).show();
+
+    private void updateWeatherData(final String city) {
+        OpenWeatherRepo.getSingleton().getAPI().loadWeather(city + ",ru",
+                "762ee61f52313fbd10a4eb54ae4d4de2", "metric")
+                .enqueue(new Callback<WeatherRequestRestModel>() {
+                    @Override
+                    public void onResponse(@NonNull Call<WeatherRequestRestModel> call,
+                                           @NonNull Response<WeatherRequestRestModel> response) {
+                        if (response.body() != null && response.isSuccessful()) {
+                            renderWeather(response.body());
+                        } else {
+                            //Похоже, код у нас не в диапазоне [200..300) и случилась ошибка
+                            //обрабатываем ее
+                            if(response.code() == 500) {
+                                //ой, случился Internal Server Error. Решаем проблему
+                            } else if(response.code() == 401) {
+                                //не авторизованы, что-то с этим делаем.
+                                //например, открываем страницу с логинкой
+                            }// и так далее
                         }
-                    });
-                } else {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            RenderWeatherData renderWeather = new RenderWeatherData(jsonObject);
-                            try {
-                                townTextView.setText(renderWeather.getPlaceName());
-                                temperatureTextView.setText(renderWeather.getCurrentTemp());
-                                Toast.makeText(getActivity(), String.format("Введен город: %s", renderWeather.getCurrentTemp()), Toast.LENGTH_SHORT)
-                                        .show();
-                                pressureTextView.setText(renderWeather.getPressure());
-                                windTextView.setText(renderWeather.getWind());
-                                lastUpdateTextView.setText(renderWeather.getTimeUpdatedText());
-                                Resources res = getResources();
-                                int resID = res.getIdentifier(renderWeather.getSkyImage(), "drawable", getContext().getPackageName());
-                                skyImageView.setImageResource(resID);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                }
-            }
-        }.start();
+                    }
+
+                    //сбой при интернет подключении
+                    @Override
+                    public void onFailure(Call<WeatherRequestRestModel> call, Throwable t) {
+//                        Toast.makeText(getBaseContext(), getString(R.string.network_error),
+//                                Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
+
+    private void renderWeather(WeatherRequestRestModel model) {
+        setPlaceName(model.name, model.sys.country);
+//        setDetails(model.weather[0].description, model.main.humidity, model.main.pressure);
+//        setCurrentTemp(model.main.temp);
+//        setUpdatedText(model.dt);
+//        setWeatherIcon(model.weather[0].id,
+//                model.sys.sunrise * 1000,
+//                model.sys.sunset * 1000);
+    }
+
+    private void setPlaceName(String name, String country) {
+        String cityText = name.toUpperCase() + ", " + country;
+        townTextView.setText(cityText);
+    }
+
+
+//    public String getPlaceName() throws JSONException {
+//        return jsonObject.getString("name") + ", " + jsonObject.getJSONObject("sys").getString("country");
+//    }
+
+
+
+
+
+
+//    private void setDetails(String description, float humidity, float pressure)  {
+//        String detailsText = description.toUpperCase() + "\n"
+//                + "Humidity: " + humidity + "%" + "\n"
+//                + "Pressure: " + pressure + "hPa";
+//        detailsTextView.setText(detailsText);
+//    }
+//
+//    private void setCurrentTemp(float temp) {
+//        String currentTextText = String.format(Locale.getDefault(), "%.2f", temp) + "\u2103";
+//        currentTemperatureTextView.setText(currentTextText);
+//    }
+//
+//    private void setUpdatedText(long dt) {
+//        DateFormat dateFormat = DateFormat.getDateTimeInstance();
+//        String updateOn = dateFormat.format(new Date(dt * 1000));
+//        String updatedText = "Last update: " + updateOn;
+//        updatedTextView.setText(updatedText);
+//    }
+
+
+
+//    private void updateWeatherData(final String town) {
+//        new Thread() {
+//            @Override
+//            public void run() {
+//                final JSONObject jsonObject = WeatherDataLoader.getJSONData(town);
+//                if(jsonObject == null) {
+//                    handler.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            showAlertDialog();
+//                            Toast.makeText(getContext(), R.string.place_not_found,
+//                                    Toast.LENGTH_LONG).show();
+//                        }
+//                    });
+//                } else {
+//                    handler.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            RenderWeatherData renderWeather = new RenderWeatherData(jsonObject);
+//                            try {
+//                                townTextView.setText(renderWeather.getPlaceName());
+//                                temperatureTextView.setText(renderWeather.getCurrentTemp());
+//                                Toast.makeText(getActivity(), String.format("Введен город: %s", renderWeather.getCurrentTemp()), Toast.LENGTH_SHORT)
+//                                        .show();
+//                                pressureTextView.setText(renderWeather.getPressure());
+//                                windTextView.setText(renderWeather.getWind());
+//                                lastUpdateTextView.setText(renderWeather.getTimeUpdatedText());
+//                                Resources res = getResources();
+//                                int resID = res.getIdentifier(renderWeather.getSkyImage(), "drawable", getContext().getPackageName());
+//                                skyImageView.setImageResource(resID);
+//                            } catch (JSONException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    });
+//                }
+//            }
+//        }.start();
+//    }
 }
