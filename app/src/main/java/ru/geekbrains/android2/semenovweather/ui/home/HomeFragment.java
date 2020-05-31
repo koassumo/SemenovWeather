@@ -71,33 +71,37 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // Создаем билдер и передаем контекст приложения
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()); // (MainActivity.this) работать отказался
-                // Вытащим макет диалога
-                final View contentView = getLayoutInflater().inflate(R.layout.alert_dialog_to_know_town, null);
-                // в билдере указываем заголовок окна (можно указывать как ресурс R.string., так и строку)
-                builder.setTitle("Город")
-                        // Установим макет диалога (можно устанавливать любой view)
-                        .setMessage("Введите название города")
-                        // можно указать и пиктограмму
-                        .setIcon(R.mipmap.ic_launcher_round)
-                        .setView(contentView)
-                        // запре на клик вне окна и на выход кнопкой back
-                        .setCancelable(false)
-                        // устанавливаем кнопку (название кнопки также можно задавать строкой)
-                        .setPositiveButton("Готово", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                EditText editText = contentView.findViewById(R.id.editText);
-                                Toast.makeText(getActivity(), String.format("Введен город: %s", editText.getText().toString()), Toast.LENGTH_SHORT)
-                                        .show();
-                                townTextView.setText(editText.getText().toString());
-                                updateWeatherData(editText.getText().toString());
-                            }
-                        });
-                AlertDialog alert = builder.create();
-                alert.show();
+                AlertDialogChangeTown();
             }
         });
+    }
+
+    private void AlertDialogChangeTown() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()); // (MainActivity.this) работать отказался
+        // Вытащим макет диалога
+        final View contentView = getLayoutInflater().inflate(R.layout.alert_dialog_to_know_town, null);
+        // в билдере указываем заголовок окна (можно указывать как ресурс R.string., так и строку)
+        builder.setTitle("Город")
+                // Установим макет диалога (можно устанавливать любой view)
+                .setMessage("Введите название города")
+                // можно указать и пиктограмму
+                .setIcon(R.mipmap.ic_launcher_round)
+                .setView(contentView)
+                // запре на клик вне окна и на выход кнопкой back
+                .setCancelable(false)
+                // устанавливаем кнопку (название кнопки также можно задавать строкой)
+                .setPositiveButton("Готово", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        EditText editText = contentView.findViewById(R.id.editText);
+                        Toast.makeText(getActivity(), String.format("Введен город: %s", editText.getText().toString()), Toast.LENGTH_SHORT)
+                                .show();
+                        townTextView.setText(editText.getText().toString());
+                        updateWeatherData(editText.getText().toString());
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     public void showAlertDialog() {
