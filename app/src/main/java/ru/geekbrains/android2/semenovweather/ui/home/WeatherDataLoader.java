@@ -14,6 +14,7 @@ class WeatherDataLoader {
     private static final String OPEN_WEATHER_API_URL =
             "https://api.openweathermap.org/data/2.5/weather?q=%s&units=metric";
     private static final String KEY = "x-api-key";
+    public static final int HTTP_OK = 200;
 
     static JSONObject getJSONData(String city) {
         try {
@@ -32,7 +33,7 @@ class WeatherDataLoader {
             reader.close();
 
             JSONObject jsonObject = new JSONObject(rawData.toString());
-            if(jsonObject.getInt("cod") != 200) {
+            if(jsonObject.getInt("cod") != HTTP_OK) {
                 return null;
             } else {
                 return jsonObject;
