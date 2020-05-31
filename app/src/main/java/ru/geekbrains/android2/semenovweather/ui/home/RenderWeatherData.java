@@ -53,49 +53,65 @@ public class RenderWeatherData {
     }
 
     public String getSkyImage () throws JSONException {
-        int id = weather.getInt("id");
+
+        final int GROUP_THUNDERSTORM = 2;
+        final int GROUP_DRIZZLE = 3;
+          final int DRIZZLE_LIGHT = 301;
+        final int GROUP_RAIN = 5;
+          final int RAIN_LIGHT = 501;
+        final int GROUP_SNOW = 6;
+        final int GROUP_FOG = 7;
+        final int GROUP_CLOUDS = 8;
+          final int CLOUDS_CLEAR = 800;
+          final int CLOUDS_FEW = 801;
+          final int CLOUDS_BROKEN = 802;
+
         long sunrise = sys.getLong("sunrise") * 1000;
         long sunset = sys.getLong("sunset") * 1000;
+
+        int idWeather = weather.getInt("id");
+        int idWeatherGroup = idWeather / 100;
+
         String skyPictureName = "z_snow_white";
-        switch (id / 100) {
-            case 2: {
+        switch (idWeatherGroup) {
+            case GROUP_THUNDERSTORM: {
                 skyPictureName = "z_thunder_white";
                 break;
             }
-            case 3: {
-                if (id < 302) {
+            case GROUP_DRIZZLE: {
+                if (idWeather <= DRIZZLE_LIGHT) {
                     skyPictureName = "z_rain_light_white";
                 } else {
                     skyPictureName = "z_rain_shower_white";
                 }
                 break;
             }
-            case 5: {
-                if (id < 502) {
+            case GROUP_RAIN: {
+                if (idWeather <= RAIN_LIGHT) {
                     skyPictureName = "z_rain_light_white";
                 } else {
                     skyPictureName = "z_rain_shower_white";
                 }
                 break;
             }
-            case 6: {
+            case GROUP_SNOW: {
                 skyPictureName = "z_snow_white";
                 break;
             }
-            case 7: {
+            case GROUP_FOG: {
                 skyPictureName = "z_foggy_white";
                 break;
             }
-            case 8: {
-                if (id > 802) {
+            case GROUP_CLOUDS: {
+                if (idWeather > CLOUDS_BROKEN) {
                     skyPictureName = "z_cloud_overcast_white";
                     break;
                 }
-                if (id == 802) {
+                if (idWeather == CLOUDS_BROKEN) {
                     skyPictureName = "z_cloud_broken_white";
                     break;
                 }
-                if (id == 801 ) {
+                if (idWeather == CLOUDS_FEW ) {
                     long currentTime = new Date().getTime();
                     if(currentTime >= sunrise && currentTime < sunset) {
                         skyPictureName = "z_cloud_few_white";
@@ -104,7 +120,7 @@ public class RenderWeatherData {
                     }
                     break;
                 }
-                if (id == 800 ) {
+                if (idWeather == CLOUDS_CLEAR ) {
                     long currentTime = new Date().getTime();
                     if(currentTime >= sunrise && currentTime < sunset) {
                         skyPictureName = "z_clear_sky_white";
