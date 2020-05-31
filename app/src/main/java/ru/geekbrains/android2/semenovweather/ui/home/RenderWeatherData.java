@@ -112,7 +112,7 @@ public class RenderWeatherData {
                     break;
                 }
                 if (idWeather == CLOUDS_FEW ) {
-                    long currentTime = new Date().getTime();
+                    long currentTime = new Date().getTime(); // для дневного времени отображается солнце, для ночного - луна
                     if(currentTime >= sunrise && currentTime < sunset) {
                         skyPictureName = "z_cloud_few_white";
                     } else {
