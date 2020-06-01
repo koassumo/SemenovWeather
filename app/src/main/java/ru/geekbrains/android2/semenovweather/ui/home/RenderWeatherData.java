@@ -8,6 +8,7 @@ import java.text.DecimalFormat;
 import java.util.Date;
 
 import ru.geekbrains.android2.semenovweather.R;
+import ru.geekbrains.android2.semenovweather.ui.home.data.WeatherRequestRestModel;
 
 public class RenderWeatherData {
 
@@ -17,7 +18,7 @@ public class RenderWeatherData {
     JSONObject wind;
     JSONObject sys;
 
-    public RenderWeatherData(JSONObject jsonObject) {
+    public RenderWeatherData(WeatherRequestRestModel model) {
         try {
             this.jsonObject = jsonObject;
             weather = jsonObject.getJSONArray("weather").getJSONObject(0);
