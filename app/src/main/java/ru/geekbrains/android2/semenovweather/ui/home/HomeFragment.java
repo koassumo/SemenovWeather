@@ -18,12 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.text.DateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -165,21 +160,8 @@ public class HomeFragment extends Fragment {
         pressureTextView.setText(model.main.pressure + "mm");
         windTextView.setText(model.wind.speed + "m/s");
 
-//        setPlaceName(model.name, model.sys.country);
-//        setDetails(model.weather[0].description, model.main.humidity, model.main.pressure);
-//        setCurrentTemp(model.main.temp);
-//        setUpdatedText(model.dt);
-//        setWeatherIcon(model.weather[0].id,
-//                model.sys.sunrise * 1000,
-//                model.sys.sunset * 1000);
-//        RenderWeatherData renderWeather = new RenderWeatherData(model);
-//                                Toast.makeText(getActivity(), String.format("Введен город: %s", renderWeather.getCurrentTemp()), Toast.LENGTH_SHORT)
-//                                        .show();
-//                                lastUpdateTextView.setText(renderWeather.getTimeUpdatedText());
-
-
+        // далее установка картинки погоды
         String skyPictureName;
-
         final int GROUP_THUNDERSTORM = 2;
         final int GROUP_DRIZZLE = 3;
         final int DRIZZLE_LIGHT = 301;
@@ -261,79 +243,4 @@ public class HomeFragment extends Fragment {
         skyImageView.setImageResource(resID);
     }
 
-
-//    public String getPressure() throws JSONException {
-//        return main.getString("pressure") + " hPa";
-//    }
-//
-//    public String getWind() throws JSONException {
-//        return wind.getString("speed") + " m/s";
-//    }
-//
-//    public String getTimeUpdatedText() throws JSONException {
-//        DateFormat dateFormat = DateFormat.getDateTimeInstance();
-//        String updateOn = dateFormat.format(new Date(jsonObject.getLong("dt") * 1000));
-//        return  weather.getString("description").toUpperCase() + "\n" + "Last update: " + updateOn;
-//    }
-
-
-//    private void setDetails(String description, float humidity, float pressure)  {
-//        String detailsText = description.toUpperCase() + "\n"
-//                + "Humidity: " + humidity + "%" + "\n"
-//                + "Pressure: " + pressure + "hPa";
-//        detailsTextView.setText(detailsText);
-//    }
-//
-//    private void setCurrentTemp(float temp) {
-//        String currentTextText = String.format(Locale.getDefault(), "%.2f", temp) + "\u2103";
-//        currentTemperatureTextView.setText(currentTextText);
-//    }
-//
-//    private void setUpdatedText(long dt) {
-//        DateFormat dateFormat = DateFormat.getDateTimeInstance();
-//        String updateOn = dateFormat.format(new Date(dt * 1000));
-//        String updatedText = "Last update: " + updateOn;
-//        updatedTextView.setText(updatedText);
-//    }
-
-
-//    private void updateWeatherData(final String town) {
-//        new Thread() {
-//            @Override
-//            public void run() {
-//                final JSONObject jsonObject = WeatherDataLoader.getJSONData(town);
-//                if(jsonObject == null) {
-//                    handler.post(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            showAlertDialog();
-//                            Toast.makeText(getContext(), R.string.place_not_found,
-//                                    Toast.LENGTH_LONG).show();
-//                        }
-//                    });
-//                } else {
-//                    handler.post(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            RenderWeatherData renderWeather = new RenderWeatherData(jsonObject);
-//                            try {
-//                                townTextView.setText(renderWeather.getPlaceName());
-//                                temperatureTextView.setText(renderWeather.getCurrentTemp());
-//                                Toast.makeText(getActivity(), String.format("Введен город: %s", renderWeather.getCurrentTemp()), Toast.LENGTH_SHORT)
-//                                        .show();
-//                                pressureTextView.setText(renderWeather.getPressure());
-//                                windTextView.setText(renderWeather.getWind());
-//                                lastUpdateTextView.setText(renderWeather.getTimeUpdatedText());
-//                                Resources res = getResources();
-//                                int resID = res.getIdentifier(renderWeather.getSkyImage(), "drawable", getContext().getPackageName());
-//                                skyImageView.setImageResource(resID);
-//                            } catch (JSONException e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                    });
-//                }
-//            }
-//        }.start();
-//    }
 }
