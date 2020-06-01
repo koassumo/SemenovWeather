@@ -7,11 +7,14 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import ru.geekbrains.android2.semenovweather.BuildConfig;
+
 class WeatherDataLoader {
-    private static final String OPEN_WEATHER_API_KEY = "56a1dd7fcdbc848539f0608906249b49";
+    private static final String OPEN_WEATHER_API_KEY = BuildConfig.WEATHER_API_KEY;
     private static final String OPEN_WEATHER_API_URL =
             "https://api.openweathermap.org/data/2.5/weather?q=%s&units=metric";
     private static final String KEY = "x-api-key";
+    public static final int HTTP_OK = 200;
 
     static JSONObject getJSONData(String city) {
         try {
@@ -30,7 +33,7 @@ class WeatherDataLoader {
             reader.close();
 
             JSONObject jsonObject = new JSONObject(rawData.toString());
-            if(jsonObject.getInt("cod") != 200) {
+            if(jsonObject.getInt("cod") != HTTP_OK) {
                 return null;
             } else {
                 return jsonObject;
