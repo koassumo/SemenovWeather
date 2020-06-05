@@ -1,4 +1,4 @@
-package ru.geekbrains.android2.semenovweather.ui.gallery;
+package ru.geekbrains.android2.semenovweather.ui.selectoptions;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment;
 
 import ru.geekbrains.android2.semenovweather.R;
 
-public class GalleryFragment extends Fragment {
+public class selectOptionsFragment extends Fragment {
 
     TextView townEditText;
     Button goBackMainActivityBtn;
@@ -33,7 +33,7 @@ public class GalleryFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-
+            // ????????????????????????????
 
             }
         });
