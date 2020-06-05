@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/nav_gallery"
-        android:name="ru.geekbrains.android2.semenovweather.ui.gallery.GalleryFragment"
+        android:name="ru.geekbrains.android2.semenovweather.ui.selectoptions.selectOptionsFragment"
         android:label="@string/menu_gallery"
         tools:layout="@layout/fragment_gallery" >
         <argument
@@ -27,7 +27,7 @@
 
     <fragment
         android:id="@+id/nav_slideshow"
-        android:name="ru.geekbrains.android2.semenovweather.ui.slideshow.SlideshowFragment"
+        android:name="ru.geekbrains.android2.semenovweather.ui.help.helpFragment"
         android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
 </navigation>

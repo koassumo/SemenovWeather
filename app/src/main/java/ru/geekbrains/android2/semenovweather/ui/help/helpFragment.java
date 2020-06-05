@@ -1,4 +1,4 @@
-package ru.geekbrains.android2.semenovweather.ui.slideshow;
+package ru.geekbrains.android2.semenovweather.ui.help;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -6,21 +6,18 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.material.button.MaterialButton;
 
 import ru.geekbrains.android2.semenovweather.R;
-import ru.geekbrains.android2.semenovweather.ui.gallery.GalleryFragment;
+import ru.geekbrains.android2.semenovweather.ui.selectoptions.selectOptionsFragment;
 
-public class SlideshowFragment extends Fragment {
+public class helpFragment extends Fragment {
 
     private MaterialButton goBackMainActivityBtn;
     private MaterialButton goUrlBtn;
@@ -44,9 +41,9 @@ public class SlideshowFragment extends Fragment {
         goBackMainActivityBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GalleryFragment galleryFragment = new GalleryFragment();
+                selectOptionsFragment selectOptionsFragment = new selectOptionsFragment();
                 FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-                transaction.replace(R.id.nav_host_fragment_container, galleryFragment);
+                transaction.replace(R.id.nav_host_fragment_container, selectOptionsFragment);
                 transaction.commit();
             }
         });
