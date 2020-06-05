@@ -1,10 +1,12 @@
 package ru.geekbrains.android2.semenovweather.ui.home;
 
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +39,8 @@ public class HomeFragment extends Fragment {
     private ImageView skyImageView;
     private View changeTownBtn;
 
+    private final String townTextKey = "town_text_key";
+
     private final Handler handler = new Handler();
     Typeface weatherFont;
 
@@ -60,9 +64,12 @@ public class HomeFragment extends Fragment {
         changeTownBtn = view.findViewById(R.id.changeTownBtn);
 
         initFonts();
+        getSharedPrefs();
+
         updateWeatherData(townTextView.getText().toString());
         setOnChangeTownBtnClick();
     }
+
 
     private void initFonts() {
         weatherFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/weather.ttf"); //если в MainActivity, то getActivity(). не нужен
@@ -100,12 +107,29 @@ public class HomeFragment extends Fragment {
                         Toast.makeText(getActivity(), String.format("Введен город: %s", editText.getText().toString()), Toast.LENGTH_SHORT)
                                 .show();
                         townTextView.setText(editText.getText().toString());
+                        setSharedPrefs();
                         updateWeatherData(editText.getText().toString());
                     }
                 });
         AlertDialog alert = builder.create();
         alert.show();
     }
+
+    private void setSharedPrefs() {
+        final SharedPreferences defaultPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        SharedPreferences.Editor editor = defaultPrefs.edit();
+        String text = townTextView.getText().toString();
+        editor.putString(townTextKey, text);
+        editor.apply();
+
+    }
+
+    private void getSharedPrefs() {
+        final SharedPreferences defaultPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String text = defaultPrefs.getString(townTextKey, "");
+        townTextView.setText(text);
+    }
+
 
     public void showAlertDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()); // (MainActivity.this) работать отказался
