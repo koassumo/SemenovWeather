@@ -7,7 +7,7 @@
     tools:context=".ui.selectoptions.selectOptionsFragment">
 
         <com.google.android.material.button.MaterialButton
-        android:id="@+id/goBackMainActivityBtn"
+        android:id="@+id/goBackHomeFragmentBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -18,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/goHelpInstructionActivityBtn"
+        android:id="@+id/goHelpFragmentBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
