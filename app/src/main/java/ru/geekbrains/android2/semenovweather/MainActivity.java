@@ -1,7 +1,11 @@
 package ru.geekbrains.android2.semenovweather;
 
+import android.content.BroadcastReceiver;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.Menu;
+import android.widget.EditText;
 
 import com.google.android.material.navigation.NavigationView;
 
@@ -16,6 +20,7 @@ import androidx.appcompat.widget.Toolbar;
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
+    private BroadcastReceiver batteryReceiver = new BatteryReceiver();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,8 +29,16 @@ public class MainActivity extends AppCompatActivity {
         initToolbar();
         initDrawer();
 
+        registerReceiver(batteryReceiver, new IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED));
+        initToken();
+    //    initNotificationChannel();
+    }
+
+    private void initToken() {
+//        final EditText textToken = findViewById(R.id.lastUpdateTextView);
 
     }
+
 
     private void initToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -61,4 +74,7 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
+
+
+
 }
