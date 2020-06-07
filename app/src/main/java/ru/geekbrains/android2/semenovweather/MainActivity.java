@@ -4,8 +4,10 @@ import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 
@@ -29,15 +31,9 @@ public class MainActivity extends AppCompatActivity {
         initToolbar();
         initDrawer();
 
-        registerReceiver(batteryReceiver, new IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED));
-        initToken();
-    //    initNotificationChannel();
+//        registerReceiver(batteryReceiver, new IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED));
     }
 
-    private void initToken() {
-//        final EditText textToken = findViewById(R.id.lastUpdateTextView);
-
-    }
 
 
     private void initToolbar() {
@@ -60,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -75,6 +70,16 @@ public class MainActivity extends AppCompatActivity {
                 || super.onSupportNavigateUp();
     }
 
-
+    // при открытии приложения отображает текст из пуш-уведомления
+    @Override
+    protected void onStart() {
+        super.onStart();
+        try {
+            String data = (String) getIntent().getExtras().get("ticketId");
+            Toast.makeText(this, data, Toast.LENGTH_LONG).show();
+        } catch (NullPointerException exc) {
+            Log.e("TAG", "NullPointer in MainActivity! First launch?");
+        }
+    }
 
 }
