@@ -11,23 +11,29 @@
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home">
         <action
-            android:id="@+id/action_nav_home_to_nav_gallery"
-            app:destination="@id/nav_gallery" />
+            android:id="@+id/action_nav_home_to_nav_options"
+            app:destination="@id/nav_options" />
     </fragment>
 
     <fragment
-        android:id="@+id/nav_gallery"
+        android:id="@+id/nav_options"
         android:name="ru.geekbrains.android2.semenovweather.ui.selectoptions.selectOptionsFragment"
         android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" >
+        tools:layout="@layout/fragment_options" >
         <argument
             android:name="args"
             app:argType="string" />
+        <action
+            android:id="@+id/action_nav_options_to_nav_home"
+            app:destination="@id/nav_home" />
+        <action
+            android:id="@+id/action_nav_options_to_nav_help"
+            app:destination="@id/nav_help" />
     </fragment>
 
     <fragment
-        android:id="@+id/nav_slideshow"
+        android:id="@+id/nav_help"
         android:name="ru.geekbrains.android2.semenovweather.ui.help.helpFragment"
         android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        tools:layout="@layout/fragment_help" />
 </navigation>

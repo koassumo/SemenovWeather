@@ -267,4 +267,6 @@ public class HomeFragment extends Fragment {
         skyImageView.setImageResource(resID);
     }
 
+
+
 }

@@ -24,14 +24,14 @@ public class helpFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_slideshow, container, false);
+        View root = inflater.inflate(R.layout.fragment_help, container, false);
         return root;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        goBackMainActivityBtn = view.findViewById(R.id.goBackMainActivityBtn);
+        goBackMainActivityBtn = view.findViewById(R.id.goBackHomeFragmentBtn);
         goUrlBtn = view.findViewById(R.id.goUrlButton);
         setOnGoBackToOptionsSelectActivityBtnClick();
         setOnGoUrlBtnClick();
