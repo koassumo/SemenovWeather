@@ -45,5 +45,6 @@
     <string name="press_button">Город не найден</string>
     <string name="button">OK</string>
     <string name="network_error">Нет сети!</string>
+    <string name="find_me_btn">узнать погоду где я</string>
 
 </resources>

@@ -1,15 +1,26 @@
 package ru.geekbrains.android2.semenovweather.ui.home;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Typeface;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,15 +29,21 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import java.io.IOException;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import ru.geekbrains.android2.semenovweather.R;
 import ru.geekbrains.android2.semenovweather.ui.home.data.WeatherRequestRestModel;
+
+import static androidx.core.content.ContextCompat.getSystemService;
 
 public class HomeFragment extends Fragment {
 
@@ -38,11 +55,21 @@ public class HomeFragment extends Fragment {
     private TextView lastUpdateTextView;
     private ImageView skyImageView;
     private View changeTownBtn;
+    private Button findMeBtn;
 
     private final String townTextKey = "town_text_key";
 
     private final Handler handler = new Handler();
     Typeface weatherFont;
+
+    private final static String TAG = "LOCATION";
+    private final static String MSG_NO_DATA = "No data";
+
+    private TextView mAddress = null;
+    private LocationManager mLocManager = null;
+    private LocListener mLocListener = null;
+
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -62,12 +89,42 @@ public class HomeFragment extends Fragment {
         skyImageView = view.findViewById(R.id.skyImageView);
 
         changeTownBtn = view.findViewById(R.id.changeTownBtn);
+        findMeBtn = view.findViewById(R.id.findMeBtn);
 
         initFonts();
         getSharedPrefs();
 
         updateWeatherData(townTextView.getText().toString());
         setOnChangeTownBtnClick();
+        setOnFindMeBtnClick();
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
+        } else {
+            mLocManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+            Location loc;
+            try {
+                loc = Objects.requireNonNull(mLocManager)
+                        .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            loc = mLocManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            loc = mLocManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+            if (loc != null) {
+                mAddress.setText(getAddressByLoc(loc));
+            }
+        }
+
+
     }
 
 
@@ -85,6 +142,17 @@ public class HomeFragment extends Fragment {
             }
         });
     }
+
+    private void setOnFindMeBtnClick() {
+        changeTownBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialogChangeTown();
+            }
+        });
+    }
+
+
 
     private void AlertDialogChangeTown() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()); // (MainActivity.this) работать отказался
@@ -265,6 +333,98 @@ public class HomeFragment extends Fragment {
         Resources res = getResources();
         int resID = res.getIdentifier(skyPictureName, "drawable", getContext().getPackageName());
         skyImageView.setImageResource(resID);
+    }
+
+
+
+
+    @SuppressLint("MissingPermission")
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+        if (mLocListener == null) mLocListener = new LocListener();
+
+        // Setting up Location Listener
+        // min time - 3 seconds
+        // min distance - 1 meter
+        mLocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                3000L, 1.0F, mLocListener);
+    }
+
+    @Override
+    protected void onPause() {
+        if (mLocListener != null) mLocManager.removeUpdates(mLocListener);
+        super.onPause();
+
+    }
+
+    private String getAddressByLoc(Location loc) {
+
+        final Geocoder geo = new Geocoder(this);
+        List<Address> list;
+        try {
+            list = geo.getFromLocation(loc.getLatitude(), loc.getLongitude(), 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return e.getLocalizedMessage();
+        }
+
+        // If list is empty, return "No data" string
+        if (list.isEmpty()) return MSG_NO_DATA;
+
+        // Get first element from List
+        Address a = list.get(0);
+
+        // Get a Postal Code
+        final int index = a.getMaxAddressLineIndex();
+        String postal = null;
+        if (index >= 0) {
+            postal = a.getAddressLine(index);
+        }
+
+        // Make address string
+        StringBuilder builder = new StringBuilder();
+        final String sep = ", ";
+        builder.append(postal).append(sep)
+                .append(a.getCountryName()).append(sep)
+                .append(a.getAdminArea()).append(sep)
+                .append(a.getThoroughfare()).append(sep)
+                .append(a.getSubThoroughfare());
+
+
+        return builder.toString();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if(requestCode == 100) {
+            boolean permissionsGranted = true;
+            for (int grantResult : grantResults) {
+                if (grantResult != PackageManager.PERMISSION_GRANTED) {
+                    permissionsGranted = false;
+                    break;
+                }
+            }
+            if(permissionsGranted) recreate();
+        }
+    }
+
+    private final class LocListener implements LocationListener {
+
+        @Override
+        public void onLocationChanged(Location location) {
+            Log.d(TAG, "onLocationChanged: " + location.toString());
+            mAddress.setText(getAddressByLoc(location));
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) { /* Empty */ }
+        @Override
+        public void onProviderEnabled(String provider) { /* Empty */ }
+        @Override
+        public void onProviderDisabled(String provider) { /* Empty */ }
     }
 
 
