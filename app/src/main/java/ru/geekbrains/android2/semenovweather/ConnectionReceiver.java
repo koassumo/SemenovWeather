@@ -34,7 +34,6 @@ public class ConnectionReceiver extends BroadcastReceiver {
             }
         }
 
-
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "2")
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle("ConnectivityActionReceiver")

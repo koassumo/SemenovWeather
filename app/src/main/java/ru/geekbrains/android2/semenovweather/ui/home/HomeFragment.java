@@ -168,6 +168,7 @@ public class HomeFragment extends Fragment {
                             }// и так далее
                         }
                     }
+
                     //сбой при интернет подключении
                     @Override
                     public void onFailure(Call<WeatherRequestRestModel> call, Throwable t) {

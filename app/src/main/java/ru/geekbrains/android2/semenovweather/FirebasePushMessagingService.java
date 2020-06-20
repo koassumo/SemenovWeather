@@ -17,9 +17,7 @@ import com.google.firebase.messaging.RemoteMessage;
 public class FirebasePushMessagingService extends FirebaseMessagingService {
     private int messageId = 0;
 
-//    public FirebasePushMessagingService() {
-//
-//    }
+//    public FirebasePushMessagingService() {}
 
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {

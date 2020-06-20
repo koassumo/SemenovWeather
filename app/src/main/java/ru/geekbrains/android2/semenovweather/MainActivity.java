@@ -34,8 +34,6 @@ public class MainActivity extends AppCompatActivity {
 //        registerReceiver(batteryReceiver, new IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED));
     }
 
-
-
     private void initToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -81,7 +79,4 @@ public class MainActivity extends AppCompatActivity {
             Log.e("TAG", "NullPointer in MainActivity! First launch?");
         }
     }
-
-
-
 }
