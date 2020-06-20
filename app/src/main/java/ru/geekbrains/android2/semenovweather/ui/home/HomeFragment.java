@@ -29,7 +29,7 @@ import ru.geekbrains.android2.semenovweather.BuildConfig;
 import ru.geekbrains.android2.semenovweather.R;
 import ru.geekbrains.android2.semenovweather.ui.home.data.WeatherRequestRestModel;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements ListenerNewWeatherData{
 
     private TextView townTextView;
     private TextView temperatureTextView;
@@ -44,6 +44,8 @@ public class HomeFragment extends Fragment {
 
     private final Handler handler = new Handler();
     Typeface weatherFont;
+
+    private UpdateWeatherData updateWeatherData = new UpdateWeatherData(this);;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -67,7 +69,8 @@ public class HomeFragment extends Fragment {
         initFonts();
         getSharedPrefs();
 
-        updateWeatherData(townTextView.getText().toString());
+//        UpdateWeatherData updateWeatherData = new UpdateWeatherData(this);
+        updateWeatherData.updateByTown(townTextView.getText().toString());
         setOnChangeTownBtnClick();
     }
 
@@ -109,7 +112,7 @@ public class HomeFragment extends Fragment {
                                 .show();
                         townTextView.setText(editText.getText().toString());
                         setSharedPrefs();
-                        updateWeatherData(editText.getText().toString());
+                        updateWeatherData.updateByTown(editText.getText().toString());
                     }
                 });
         AlertDialog alert = builder.create();
@@ -148,38 +151,9 @@ public class HomeFragment extends Fragment {
         alert.show();
     }
 
+    void renderWeather(WeatherRequestRestModel model) {
 
-    private void updateWeatherData(final String city) {
-        OpenWeatherRepo.getSingleton().getAPI().loadWeather(city,
-                BuildConfig.WEATHER_API_KEY, "metric")
-                .enqueue(new Callback<WeatherRequestRestModel>() {
-                    @Override
-                    public void onResponse(@NonNull Call<WeatherRequestRestModel> call,
-                                           @NonNull Response<WeatherRequestRestModel> response) {
-                        if (response.body() != null && response.isSuccessful()) {
-                            renderWeather(response.body());
-                        } else {
-                            //Похоже, код у нас не в диапазоне [200..300) и случилась ошибка
-                            //обрабатываем ее
-                            if (response.code() == 500) {
-                                //ой, случился Internal Server Error. Решаем проблему
-                            } else if (response.code() == 401) {
-                                //не авторизованы, что-то с этим делаем.
-                                //например, открываем страницу с логинкой
-                            }// и так далее
-                        }
-                    }
-
-                    //сбой при интернет подключении
-                    @Override
-                    public void onFailure(Call<WeatherRequestRestModel> call, Throwable t) {
-//                        Toast.makeText(getBaseContext(), getString(R.string.network_error),
-//                                Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
-
-    private void renderWeather(WeatherRequestRestModel model) {
+//        SkyPictureName skyPictureName = new SkyPictureName(this);
 
         townTextView.setText(model.name + ", " + model.sys.country);
         temperatureTextView.setText("" + model.main.temp);
@@ -270,5 +244,8 @@ public class HomeFragment extends Fragment {
     }
 
 
+    @Override
+    public void renewWeatherData() {
 
+    }
 }

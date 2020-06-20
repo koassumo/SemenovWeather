@@ -6,11 +6,14 @@ import java.util.Date;
 
 import ru.geekbrains.android2.semenovweather.ui.home.data.WeatherRequestRestModel;
 
-public class RenderWeather {
+public class SkyPictureName {
 
-//    private void renderWeather(WeatherRequestRestModel model) {
+//    HomeFragment homeFragment;
 //
-//        townTextView.setText(model.name + ", " + model.sys.country);
+//    public SkyPictureName (HomeFragment homeFragment) {
+//        this.homeFragment = homeFragment;
+//
+//        homeFragment.townTextView.setText(model.name + ", " + model.sys.country);
 //        temperatureTextView.setText("" + model.main.temp);
 //        pressureTextView.setText(model.main.pressure + "mm");
 //        windTextView.setText(model.wind.speed + "m/s");

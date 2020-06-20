@@ -18,7 +18,6 @@ import androidx.navigation.Navigation;
 import ru.geekbrains.android2.semenovweather.R;
 
 public class selectOptionsFragment extends Fragment {
-
     TextView townEditText;
     Button goHomeFragmentBtn;
     Button goHelpFragmentBtn;
