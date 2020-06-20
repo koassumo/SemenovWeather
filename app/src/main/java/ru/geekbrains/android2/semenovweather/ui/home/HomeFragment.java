@@ -25,6 +25,7 @@ import java.util.Date;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import ru.geekbrains.android2.semenovweather.BuildConfig;
 import ru.geekbrains.android2.semenovweather.R;
 import ru.geekbrains.android2.semenovweather.ui.home.data.WeatherRequestRestModel;
 
@@ -150,7 +151,7 @@ public class HomeFragment extends Fragment {
 
     private void updateWeatherData(final String city) {
         OpenWeatherRepo.getSingleton().getAPI().loadWeather(city,
-                "762ee61f52313fbd10a4eb54ae4d4de2", "metric")
+                BuildConfig.WEATHER_API_KEY, "metric")
                 .enqueue(new Callback<WeatherRequestRestModel>() {
                     @Override
                     public void onResponse(@NonNull Call<WeatherRequestRestModel> call,
