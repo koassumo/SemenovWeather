@@ -22,10 +22,6 @@ import androidx.fragment.app.Fragment;
 
 import java.util.Date;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import ru.geekbrains.android2.semenovweather.BuildConfig;
 import ru.geekbrains.android2.semenovweather.R;
 import ru.geekbrains.android2.semenovweather.ui.home.data.WeatherRequestRestModel;
 
@@ -69,7 +65,6 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData{
         initFonts();
         getSharedPrefs();
 
-//        UpdateWeatherData updateWeatherData = new UpdateWeatherData(this);
         updateWeatherData.updateByTown(townTextView.getText().toString());
         setOnChangeTownBtnClick();
     }
@@ -134,7 +129,6 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData{
         townTextView.setText(text);
     }
 
-
     public void showAlertDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()); // (MainActivity.this) работать отказался
         builder.setTitle(R.string.exclamation)
@@ -151,10 +145,8 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData{
         alert.show();
     }
 
-    void renderWeather(WeatherRequestRestModel model) {
-
-//        SkyPictureName skyPictureName = new SkyPictureName(this);
-
+    @Override
+    public void showWeatherData(WeatherRequestRestModel model) {
         townTextView.setText(model.name + ", " + model.sys.country);
         temperatureTextView.setText("" + model.main.temp);
         pressureTextView.setText(model.main.pressure + "mm");
@@ -241,11 +233,5 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData{
         Resources res = getResources();
         int resID = res.getIdentifier(skyPictureName, "drawable", getContext().getPackageName());
         skyImageView.setImageResource(resID);
-    }
-
-
-    @Override
-    public void renewWeatherData() {
-
     }
 }

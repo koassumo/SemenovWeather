@@ -23,7 +23,7 @@ public class UpdateWeatherData {
                     public void onResponse(@NonNull Call<WeatherRequestRestModel> call,
                                            @NonNull Response<WeatherRequestRestModel> response) {
                         if (response.body() != null && response.isSuccessful()) {
-                            homeFragment.renderWeather(response.body());
+                            homeFragment.showWeatherData(response.body());
                         } else {
                             //Похоже, код у нас не в диапазоне [200..300) и случилась ошибка
                             //обрабатываем ее
