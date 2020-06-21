@@ -3,11 +3,13 @@ package ru.geekbrains.android2.semenovweather.ui.selectoptions;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,6 +38,7 @@ public class selectOptionsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setOnGoHomeFragmentBtnClick();
+        setOnEnter();
         setOnGoHelpFragmentBtnClick();
         readSharedPrefs();
     }
@@ -47,6 +50,23 @@ public class selectOptionsFragment extends Fragment {
             bundle.putString("arg", "data");
             NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
             navController.navigate(R.id.action_nav_options_to_nav_home, bundle);
+        });
+    }
+
+    private void setOnEnter() {
+        townEditText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    saveSharedPrefs();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("arg", "data");
+                    NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                    navController.navigate(R.id.action_nav_options_to_nav_home, bundle);
+                    return true;
+                }
+                return false;
+            }
         });
     }
 

@@ -120,7 +120,6 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData{
         String text = townTextView.getText().toString();
         editor.putString(townTextKey, text);
         editor.apply();
-
     }
 
     private void getSharedPrefs() {
