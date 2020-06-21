@@ -71,7 +71,6 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData{
         setOnChangeTownBtnClick();
     }
 
-
     private void initFonts() {
         weatherFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/weather.ttf"); //если в MainActivity, то getActivity(). не нужен
         skyTextView.setTypeface(weatherFont);
@@ -99,22 +98,6 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData{
         final SharedPreferences defaultPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         String text = defaultPrefs.getString(townTextKey, "");
         townTextView.setText(text);
-    }
-
-    public void showAlertDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()); // (MainActivity.this) работать отказался
-        builder.setTitle(R.string.exclamation)
-                .setMessage(R.string.press_button)
-                .setIcon(R.mipmap.ic_launcher_round)
-                .setCancelable(false)
-                .setPositiveButton(R.string.button,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                Toast.makeText(getActivity(), "Кнопка нажата", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-        AlertDialog alert = builder.create();
-        alert.show();
     }
 
     @Override

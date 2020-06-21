@@ -101,6 +101,22 @@ public class selectOptionsFragment extends Fragment {
         alert.show();
     }
 
+    public void showAlertDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()); 
+        builder.setTitle(R.string.exclamation)
+                .setMessage(R.string.press_button)
+                .setIcon(R.mipmap.ic_launcher_round)
+                .setCancelable(false)
+                .setPositiveButton(R.string.button,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Toast.makeText(getActivity(), "Кнопка нажата", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
     private void setOnGoHelpFragmentBtnClick() {
         goHelpFragmentBtn.setOnClickListener(v -> {
             saveSharedPrefs();
