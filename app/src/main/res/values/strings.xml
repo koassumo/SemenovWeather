@@ -45,5 +45,7 @@
     <string name="press_button">Город не найден</string>
     <string name="button">OK</string>
     <string name="network_error">Нет сети!</string>
+    <string name="alert_title_no_town">Город не выбран</string>
+    <string name="alert_msg_input_town">Введите название города</string>
 
 </resources>
