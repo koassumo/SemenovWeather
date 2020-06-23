@@ -30,7 +30,7 @@ public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataA
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         //context = parent.getContext();
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.recycle_view_item, parent, false);
+                .inflate(R.layout.recycle_view_towns_item, parent, false);
         return new ViewHolder(view);
     }
 

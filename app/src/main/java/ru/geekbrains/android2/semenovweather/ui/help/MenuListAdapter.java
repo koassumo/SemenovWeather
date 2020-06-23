@@ -55,7 +55,7 @@ public class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.ViewHo
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recycle_view_item,
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recycle_view_days_item,
                 viewGroup, false);
         return new ViewHolder(view);
     }

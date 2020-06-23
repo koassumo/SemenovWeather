@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import ru.geekbrains.android2.semenovweather.MainActivity;
 import ru.geekbrains.android2.semenovweather.R;
 import ru.geekbrains.android2.semenovweather.ui.home.data.WeatherRequestRestModel;
 
@@ -55,9 +54,7 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData, IF
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-        iniList(root);
-        ((MainActivity)requireActivity()).setHomeFragmentList(this);
-        setHasOptionsMenu(true);
+        initList(root);
         return root;
     }
 
@@ -80,14 +77,13 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData, IF
         setOnChangeTownBtnClick();
     }
 
-    private void iniList(View root) {
+    private void initList(View root) {
         RecyclerView recyclerView = root.findViewById(R.id.recycleViewDays);
-
         // Эта установка повышает производительность системы
         recyclerView.setHasFixedSize(true);
 
         // Будем работать со встроенным менеджером
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
         // Устанавливаем адаптер
