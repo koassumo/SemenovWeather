@@ -47,5 +47,10 @@
     <string name="network_error">Нет сети!</string>
     <string name="alert_title_no_town">Город не выбран</string>
     <string name="alert_msg_input_town">Введите название города</string>
+    <string name="add">add</string>
+    <string name="update">update</string>
+    <string name="remove">remove</string>
+    <string name="clear">clear all</string>
+    <string name="element_number">номер эл-та</string>
 
 </resources>

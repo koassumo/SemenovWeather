@@ -1,33 +1,38 @@
 package ru.geekbrains.android2.semenovweather.ui.home;
 
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import ru.geekbrains.android2.semenovweather.MainActivity;
 import ru.geekbrains.android2.semenovweather.R;
 import ru.geekbrains.android2.semenovweather.ui.home.data.WeatherRequestRestModel;
 
-public class HomeFragment extends Fragment implements ListenerNewWeatherData{
+public class HomeFragment extends Fragment implements ListenerNewWeatherData, IFragmentList {
 
     private TextView townTextView;
     private TextView temperatureTextView;
@@ -43,11 +48,16 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData{
     private final Handler handler = new Handler();
     Typeface weatherFont;
 
-    private UpdateWeatherData updateWeatherData = new UpdateWeatherData(this);;
+    private UpdateWeatherData updateWeatherData = new UpdateWeatherData(this);
+
+    private RecyclerDataAdapter adapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
+        iniList(root);
+        ((MainActivity)requireActivity()).setFragmentList(this);
+        setHasOptionsMenu(true);
         return root;
     }
 
@@ -61,14 +71,135 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData{
         skyTextView = view.findViewById(R.id.lastUpdateTextView);
         lastUpdateTextView = view.findViewById(R.id.lastUpdateTextView);
         skyImageView = view.findViewById(R.id.skyImageView);
-
         changeTownBtn = view.findViewById(R.id.changeTownBtn);
+        //        searchEditText = findViewById(R.id.searchEditText);
 
         initFonts();
         getSharedPrefs();
-
         updateWeatherData.updateByTown(townTextView.getText().toString());
         setOnChangeTownBtnClick();
+    }
+
+    private void iniList(View root) {
+        RecyclerView recyclerView = root.findViewById(R.id.recyclerView);
+
+        // Эта установка повышает производительность системы
+        recyclerView.setHasFixedSize(true);
+
+        // Будем работать со встроенным менеджером
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(layoutManager);
+
+        // Устанавливаем адаптер
+        adapter = new RecyclerDataAdapter(initData(), this);
+        recyclerView.setAdapter(adapter);
+    }
+
+    private List<String> initData() {
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            list.add(String.format("Element %d", i));
+        }
+        return list;
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = requireActivity().getMenuInflater();
+        inflater.inflate(R.menu.context_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        ContextMenu.ContextMenuInfo menuInfo = item.getMenuInfo();
+        handleMenuItemClick(item);
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.add_context:
+                adapter.addItem(String.format("New element %d", adapter.getItemCount()));
+                return true;
+            case R.id.update_context:
+                adapter.updateItem(String.format("Updated element %d", adapter.getMenuPosition()), adapter.getMenuPosition());
+                return true;
+            case R.id.remove_context:
+                adapter.removeItem(adapter.getMenuPosition());
+                return true;
+            case R.id.clear_context:
+                adapter.clearItems();
+                return true;
+        }
+        return super.onContextItemSelected(item);
+    }
+
+    @Override
+    public void addItem(String str) {
+        adapter.addItem(str);
+    }
+
+    @Override
+    public void clearItems() {
+        adapter.clearItems();
+    }
+
+    private void handleMenuItemClick(MenuItem item) {
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        switch (id) {
+            case R.id.add_context: {
+                //menuListAdapter.addItem();
+                break;
+            }
+//            case R.id.menu_search: {
+//                if(searchEditText.getVisibility() == View.VISIBLE) {
+//                    searchEditText.setVisibility(View.GONE);
+//                    Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.app_name));
+//                } else {
+//                    Objects.requireNonNull(getSupportActionBar()).setTitle("");
+//                    searchEditText.setVisibility(View.VISIBLE);
+//                    searchEditText.addTextChangedListener(new TextWatcher() {
+//                        @Override
+//                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//                        }
+//
+//                        @Override
+//                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                        }
+//
+//                        @Override
+//                        public void afterTextChanged(Editable s) {
+//                            //Вам приходит на вход текст поиска - ищем его - в бд, через АПИ (сервер в инете) и т.д.
+//                            Toast.makeText(getApplicationContext(), s.toString(), Toast.LENGTH_SHORT).show();
+//                        }
+//                    });
+//                }
+//            }
+            case R.id.update_context: {
+                //menuListAdapter.editItem(2500);
+                break;
+            }
+            case R.id.remove_context: {
+                //menuListAdapter.removeElement();
+                break;
+            }
+            case R.id.clear_context: {
+                //menuListAdapter.clearList();
+                break;
+            }
+            case 12345: {
+                Toast.makeText(getContext(), "Был нажат доп. элемент попап меню",
+                        Toast.LENGTH_SHORT).show();
+            }
+//            default: {
+//                if(id != R.id.menu_more) {
+//                    Toast.makeText(getContext(), getString(R.string.action_not_found),
+//                            Toast.LENGTH_SHORT).show();
+//                }
+//            }
+
+            //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     private void initFonts() {

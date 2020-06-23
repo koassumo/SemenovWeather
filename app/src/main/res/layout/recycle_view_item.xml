@@ -24,13 +24,13 @@
             android:textAlignment="viewStart"
             android:textSize="30sp" />
 
-        <TextView
-            android:id="@+id/textStudentLastName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TextView"
-            android:textAlignment="viewEnd"
-            android:textSize="30sp" />
+<!--        <TextView-->
+<!--            android:id="@+id/textStudentLastName"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="TextView"-->
+<!--            android:textAlignment="viewEnd"-->
+<!--            android:textSize="30sp" />-->
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>
