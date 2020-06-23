@@ -45,6 +45,11 @@
             android:layout_height="wrap_content"
             android:hint="@string/town_edit_text_hint"
             android:inputType="text"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycleViewTowns"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <CheckBox
@@ -68,6 +73,7 @@
         android:text="@string/checkbox_pressure_title"
         app:layout_constraintBottom_toTopOf="@+id/windCheckBox"
         app:layout_constraintStart_toStartOf="parent" />
+
 
     <TextView
         android:id="@+id/pressureTextView"

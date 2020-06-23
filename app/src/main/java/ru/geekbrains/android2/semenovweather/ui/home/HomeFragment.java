@@ -50,13 +50,13 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData, IF
 
     private UpdateWeatherData updateWeatherData = new UpdateWeatherData(this);
 
-    private RecyclerDataAdapter adapter;
+    private RecyclerDataAdapterDays adapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
         iniList(root);
-        ((MainActivity)requireActivity()).setFragmentList(this);
+        ((MainActivity)requireActivity()).setHomeFragmentList(this);
         setHasOptionsMenu(true);
         return root;
     }
@@ -81,7 +81,7 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData, IF
     }
 
     private void iniList(View root) {
-        RecyclerView recyclerView = root.findViewById(R.id.recyclerView);
+        RecyclerView recyclerView = root.findViewById(R.id.recycleViewDays);
 
         // Эта установка повышает производительность системы
         recyclerView.setHasFixedSize(true);
@@ -91,7 +91,7 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData, IF
         recyclerView.setLayoutManager(layoutManager);
 
         // Устанавливаем адаптер
-        adapter = new RecyclerDataAdapter(initData(), this);
+        adapter = new RecyclerDataAdapterDays(initData(), this);
         recyclerView.setAdapter(adapter);
     }
 

@@ -1,13 +1,11 @@
-package ru.geekbrains.android2.semenovweather.ui.home;
+package ru.geekbrains.android2.semenovweather.ui.selectoptions;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -15,14 +13,14 @@ import java.util.List;
 
 import ru.geekbrains.android2.semenovweather.R;
 
-public class RecyclerDataAdapter extends RecyclerView.Adapter<RecyclerDataAdapter.ViewHolder> {
+public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataAdapterTowns.ViewHolder> {
     private List<String> data;
 //    private Context context;
     private Fragment fragment;
     private int menuPosition;
     private int selectedPosition = 0;
 
-    public RecyclerDataAdapter(List<String> data, Fragment fragment) {
+    public RecyclerDataAdapterTowns(List<String> data, Fragment fragment) {
         this.data = data;
         this.fragment = fragment;
     }

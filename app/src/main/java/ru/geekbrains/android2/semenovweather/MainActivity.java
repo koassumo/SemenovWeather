@@ -24,6 +24,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import ru.geekbrains.android2.semenovweather.ui.home.HomeFragment;
 import ru.geekbrains.android2.semenovweather.ui.home.IFragmentList;
+import ru.geekbrains.android2.semenovweather.ui.selectoptions.selectOptionsFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,7 +43,11 @@ public class MainActivity extends AppCompatActivity {
 //        registerReceiver(batteryReceiver, new IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED));
     }
 
-    public void setFragmentList(HomeFragment fragment){
+    public void setHomeFragmentList(HomeFragment fragment){
+        fragmentList = fragment;
+    }
+
+    public void setOptionsFragmentList(selectOptionsFragment fragment){
         fragmentList = fragment;
     }
 
