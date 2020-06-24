@@ -7,6 +7,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import ru.geekbrains.android2.semenovweather.BuildConfig;
 import ru.geekbrains.android2.semenovweather.ui.home.data.WeatherRequestRestModel;
+import ru.geekbrains.android2.semenovweather.ui.home.data5Days.WeatherRequest5DaysModel;
 
 public class UpdateWeatherData {
     HomeFragment homeFragment;
@@ -15,7 +16,7 @@ public class UpdateWeatherData {
         this.homeFragment = homeFragment;
     }
 
-    public void updateByTown (String town) {
+    public void updateByTown(String town) {
         OpenWeatherRepo.getSingleton().getAPI().loadWeather(town,
                 BuildConfig.WEATHER_API_KEY, "metric")
                 .enqueue(new Callback<WeatherRequestRestModel>() {
@@ -36,18 +37,34 @@ public class UpdateWeatherData {
                         }
                     }
 
-                    //сбой при интернет подключении
-                    @Override
+                    @Override                    //сбой при интернет подключении
                     public void onFailure(Call<WeatherRequestRestModel> call, Throwable t) {
 //                        Toast.makeText(getBaseContext(), getString(R.string.network_error),
 //                                Toast.LENGTH_SHORT).show();
                     }
                 });
-
-
     }
 
 
-
+    public void update5Days(String town) {
+        OpenWeatherRepo5Days.getSingleton().getAPI5Days().loadWeather5Days(town,
+                BuildConfig.WEATHER_API_KEY, "metric")
+                .enqueue(new Callback<WeatherRequest5DaysModel>() {
+                    @Override
+                    public void onResponse(@NonNull Call<WeatherRequest5DaysModel> call,
+                                           @NonNull Response<WeatherRequest5DaysModel> response) {
+                        if (response.body() != null && response.isSuccessful()) {
+                            homeFragment.show5DaysData(response.body());
+                        } else {
+                            if (response.code() == 500) {
+                            } else if (response.code() == 401) {
+                            }
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<WeatherRequest5DaysModel> call, Throwable t) {
+                    }
+                });
+    }
 }
 

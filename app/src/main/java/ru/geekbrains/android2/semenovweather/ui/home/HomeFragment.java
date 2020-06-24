@@ -30,6 +30,7 @@ import java.util.List;
 
 import ru.geekbrains.android2.semenovweather.R;
 import ru.geekbrains.android2.semenovweather.ui.home.data.WeatherRequestRestModel;
+import ru.geekbrains.android2.semenovweather.ui.home.data5Days.WeatherRequest5DaysModel;
 
 public class HomeFragment extends Fragment implements ListenerNewWeatherData, IFragmentList {
 
@@ -74,6 +75,7 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData, IF
         initFonts();
         getSharedPrefs();
         updateWeatherData.updateByTown(townTextView.getText().toString());
+        updateWeatherData.update5Days(townTextView.getText().toString());
         setOnChangeTownBtnClick();
     }
 
@@ -315,5 +317,10 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData, IF
         Resources res = getResources();
         int resID = res.getIdentifier(skyPictureName, "drawable", getContext().getPackageName());
         skyImageView.setImageResource(resID);
+    }
+
+    @Override
+    public void show5DaysData(WeatherRequest5DaysModel model) {
+        lastUpdateTextView.setText(model.cnt + " ok ");
     }
 }

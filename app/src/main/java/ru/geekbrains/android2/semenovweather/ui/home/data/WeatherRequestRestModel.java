@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class WeatherRequestRestModel {
     @SerializedName("coord") public CoordRestModel coordinates;
-    @SerializedName("weather") public WeatherRestModel[] weather;
+    @SerializedName("weather") public WeatherRestModel [] weather;
     @SerializedName("base") public String base;
     @SerializedName("main") public MainRestModel main;
     @SerializedName("visibility") public int visibility;
