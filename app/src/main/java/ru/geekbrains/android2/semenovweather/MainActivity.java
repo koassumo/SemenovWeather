@@ -43,13 +43,13 @@ public class MainActivity extends AppCompatActivity {
 //        registerReceiver(batteryReceiver, new IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED));
     }
 
-    public void setHomeFragmentList(HomeFragment fragment){
-        fragmentList = fragment;
-    }
-
-    public void setOptionsFragmentList(selectOptionsFragment fragment){
-        fragmentList = fragment;
-    }
+//    public void setHomeFragmentList(HomeFragment fragment){
+//        fragmentList = fragment;
+//    }
+//
+//    public void setOptionsFragmentList(selectOptionsFragment fragment){
+//        fragmentList = fragment;
+//    }
 
     private void initToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar);

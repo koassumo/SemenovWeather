@@ -30,7 +30,6 @@ import java.util.List;
 
 import ru.geekbrains.android2.semenovweather.MainActivity;
 import ru.geekbrains.android2.semenovweather.R;
-import ru.geekbrains.android2.semenovweather.ui.home.IFragmentList;
 import ru.geekbrains.android2.semenovweather.ui.home.RecyclerDataAdapterDays;
 
 public class selectOptionsFragment extends Fragment implements IFragmentList {

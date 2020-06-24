@@ -14,14 +14,20 @@ import java.util.List;
 import ru.geekbrains.android2.semenovweather.R;
 
 public class RecyclerDataAdapterDays extends RecyclerView.Adapter<RecyclerDataAdapterDays.ViewHolder> {
-    private List<String> data;
+    private List<String> dataDate;
+    private List<String> dataTime;
+    private List<String> dataSky;
+    private List<String> dataTemp;
 //    private Context context;
     private Fragment fragment;
     private int menuPosition;
     private int selectedPosition = 0;
 
-    public RecyclerDataAdapterDays(List<String> data, Fragment fragment) {
-        this.data = data;
+    public RecyclerDataAdapterDays(List<String> dataDate, List<String> dataTime, List<String> dataSky, List<String> dataTemp, Fragment fragment) {
+        this.dataDate = dataDate;
+        this.dataTime = dataTime;
+        this.dataSky = dataSky;
+        this.dataTemp = dataTemp;
         this.fragment = fragment;
     }
 
@@ -42,7 +48,14 @@ public class RecyclerDataAdapterDays extends RecyclerView.Adapter<RecyclerDataAd
 
         // Заполнение элементов холдера
         TextView textElement = holder.getTextElement();
-        textElement.setText(data.get(position));
+        textElement.setText(dataDate.get(position));
+
+        TextView textElementTime = holder.getTextElementTime();
+        textElementTime.setText(dataTime.get(position));
+        TextView textElementSky = holder.getTextElementSky();
+        textElementSky.setText(dataSky.get(position));
+        TextView textElementTemp = holder.getTextElementTemp();
+        textElementTemp.setText(dataTemp.get(position));
 
         // Определяем текущую позицию в списке
         textElement.setOnLongClickListener(new View.OnLongClickListener() {
@@ -61,35 +74,38 @@ public class RecyclerDataAdapterDays extends RecyclerView.Adapter<RecyclerDataAd
 
     @Override
     public int getItemCount() {
-        return data == null ? 0 : data.size();
+        return dataDate == null ? 0 : dataDate.size();
     }
-    // endregion
-
-    // region Изменение списка
-    // Добавить элемент в список
-    public void addItem(String element){
-        data.add(element);
-        notifyItemInserted(data.size()-1);
-    }
+//    // endregion
+//
+//    // region Изменение списка
+//    // Добавить элемент в список
+//    public void addItem(String element){
+//        data.add(element);
+//        notifyItemInserted(data.size()-1);
+//    }
 
     // Заменить элемент в списке
-    public void updateItem(String element, int position){
-        data.set(position, element);
+    public void updateItem(String forecastDate, String forecastTime, String forecastSky, String forecastTemp, int position){
+        dataDate.set(position, forecastDate);
+        dataTime.set(position, forecastTime);
+        dataSky.set(position, forecastSky);
+        dataTemp.set(position, forecastTemp);
         notifyItemChanged(position);
     }
 
-    // Удалить элемент из списка
-    public void removeItem(int position){
-        data.remove(position);
-        notifyItemRemoved(position);
-    }
-
-    // Очистить список
-    public void clearItems(){
-        data.clear();
-        notifyDataSetChanged();
-    }
-    // endregion
+//    // Удалить элемент из списка
+//    public void removeItem(int position){
+//        data.remove(position);
+//        notifyItemRemoved(position);
+//    }
+//
+//    // Очистить список
+//    public void clearItems(){
+//        data.clear();
+//        notifyDataSetChanged();
+//    }
+//    // endregion
 
     public int getMenuPosition() {
         return menuPosition;
@@ -97,12 +113,27 @@ public class RecyclerDataAdapterDays extends RecyclerView.Adapter<RecyclerDataAd
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView textElement;
+        private TextView textElementTime;
+        private TextView textElementSky;
+        private TextView textElementTemp;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             textElement = itemView.findViewById(R.id.textForecastDate);
+            textElementTime = itemView.findViewById(R.id.textForecastTime);
+            textElementSky = itemView.findViewById(R.id.textForecastSky);
+            textElementTemp = itemView.findViewById(R.id.textForecastTemperature);
         }
         public TextView getTextElement() {
             return textElement;
+        }
+        public TextView getTextElementTime() {
+            return textElementTime;
+        }
+        public TextView getTextElementSky() {
+            return textElementSky;
+        }
+        public TextView getTextElementTemp() {
+            return textElementTemp;
         }
     }
 

@@ -32,7 +32,7 @@ import ru.geekbrains.android2.semenovweather.R;
 import ru.geekbrains.android2.semenovweather.ui.home.dataCurrentWeather.WeatherRequestRestModel;
 import ru.geekbrains.android2.semenovweather.ui.home.dataForecast.ForecastLevel1_RequestModel;
 
-public class HomeFragment extends Fragment implements ListenerNewWeatherData, IFragmentList {
+public class HomeFragment extends Fragment implements ListenerNewWeatherData {
 
     private TextView townTextView;
     private TextView temperatureTextView;
@@ -89,7 +89,7 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData, IF
         recyclerView.setLayoutManager(layoutManager);
 
         // Устанавливаем адаптер
-        adapter = new RecyclerDataAdapterDays(initData(), this);
+        adapter = new RecyclerDataAdapterDays(initData(), initTime(), initSky(), initTemp(), this);
         recyclerView.setAdapter(adapter);
     }
 
@@ -101,104 +101,128 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData, IF
         return list;
     }
 
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        MenuInflater inflater = requireActivity().getMenuInflater();
-        inflater.inflate(R.menu.context_menu, menu);
-    }
-
-    @Override
-    public boolean onContextItemSelected(@NonNull MenuItem item) {
-        ContextMenu.ContextMenuInfo menuInfo = item.getMenuInfo();
-        handleMenuItemClick(item);
-        int id = item.getItemId();
-        switch (id) {
-            case R.id.add_context:
-                adapter.addItem(String.format("New element %d", adapter.getItemCount()));
-                return true;
-            case R.id.update_context:
-                adapter.updateItem(String.format("Updated element %d", adapter.getMenuPosition()), adapter.getMenuPosition());
-                return true;
-            case R.id.remove_context:
-                adapter.removeItem(adapter.getMenuPosition());
-                return true;
-            case R.id.clear_context:
-                adapter.clearItems();
-                return true;
+    private List<String> initTime() {
+        List<String> listTime = new ArrayList<>();
+        for (int i = 0; i < 40; i++) {
+            listTime.add(String.format("Time %d", i));
         }
-        return super.onContextItemSelected(item);
+        return listTime;
     }
 
-    @Override
-    public void addItem(String str) {
-        adapter.addItem(str);
-    }
-
-    @Override
-    public void clearItems() {
-        adapter.clearItems();
-    }
-
-    private void handleMenuItemClick(MenuItem item) {
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        switch (id) {
-            case R.id.add_context: {
-                //menuListAdapter.addItem();
-                break;
-            }
-//            case R.id.menu_search: {
-//                if(searchEditText.getVisibility() == View.VISIBLE) {
-//                    searchEditText.setVisibility(View.GONE);
-//                    Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.app_name));
-//                } else {
-//                    Objects.requireNonNull(getSupportActionBar()).setTitle("");
-//                    searchEditText.setVisibility(View.VISIBLE);
-//                    searchEditText.addTextChangedListener(new TextWatcher() {
-//                        @Override
-//                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//                        }
-//
-//                        @Override
-//                        public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                        }
-//
-//                        @Override
-//                        public void afterTextChanged(Editable s) {
-//                            //Вам приходит на вход текст поиска - ищем его - в бд, через АПИ (сервер в инете) и т.д.
-//                            Toast.makeText(getApplicationContext(), s.toString(), Toast.LENGTH_SHORT).show();
-//                        }
-//                    });
-//                }
-//            }
-            case R.id.update_context: {
-                //menuListAdapter.editItem(2500);
-                break;
-            }
-            case R.id.remove_context: {
-                //menuListAdapter.removeElement();
-                break;
-            }
-            case R.id.clear_context: {
-                //menuListAdapter.clearList();
-                break;
-            }
-            case 12345: {
-                Toast.makeText(getContext(), "Был нажат доп. элемент попап меню",
-                        Toast.LENGTH_SHORT).show();
-            }
-//            default: {
-//                if(id != R.id.menu_more) {
-//                    Toast.makeText(getContext(), getString(R.string.action_not_found),
-//                            Toast.LENGTH_SHORT).show();
-//                }
-//            }
-
-            //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    private List<String> initSky() {
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < 40; i++) {
+            list.add(String.format("%d", i));
         }
+        return list;
     }
+
+    private List<String> initTemp() {
+        List<String> listTime = new ArrayList<>();
+        for (int i = 0; i < 40; i++) {
+            listTime.add(String.format("+%d", i));
+        }
+        return listTime;
+    }
+
+//    @Override
+//    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+//        super.onCreateContextMenu(menu, v, menuInfo);
+//        MenuInflater inflater = requireActivity().getMenuInflater();
+//        inflater.inflate(R.menu.context_menu, menu);
+//    }
+
+//    @Override
+//    public boolean onContextItemSelected(@NonNull MenuItem item) {
+//        ContextMenu.ContextMenuInfo menuInfo = item.getMenuInfo();
+//        handleMenuItemClick(item);
+//        int id = item.getItemId();
+//        switch (id) {
+//            case R.id.add_context:
+//                adapter.addItem(String.format("New element %d", adapter.getItemCount()));
+//                return true;
+//            case R.id.update_context:
+//                adapter.updateItem(String.format("Updated element %d", adapter.getMenuPosition()), adapter.getMenuPosition());
+//                return true;
+//            case R.id.remove_context:
+//                adapter.removeItem(adapter.getMenuPosition());
+//                return true;
+//            case R.id.clear_context:
+//                adapter.clearItems();
+//                return true;
+//        }
+//        return super.onContextItemSelected(item);
+//    }
+
+//    @Override
+//    public void addItem(String str) {
+//        adapter.addItem(str);
+//    }
+//
+//    @Override
+//    public void clearItems() {
+//        adapter.clearItems();
+//    }
+
+//    private void handleMenuItemClick(MenuItem item) {
+//        int id = item.getItemId();
+//
+//        //noinspection SimplifiableIfStatement
+//        switch (id) {
+//            case R.id.add_context: {
+//                //menuListAdapter.addItem();
+//                break;
+//            }
+////            case R.id.menu_search: {
+////                if(searchEditText.getVisibility() == View.VISIBLE) {
+////                    searchEditText.setVisibility(View.GONE);
+////                    Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.app_name));
+////                } else {
+////                    Objects.requireNonNull(getSupportActionBar()).setTitle("");
+////                    searchEditText.setVisibility(View.VISIBLE);
+////                    searchEditText.addTextChangedListener(new TextWatcher() {
+////                        @Override
+////                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+////                        }
+////
+////                        @Override
+////                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+////                        }
+////
+////                        @Override
+////                        public void afterTextChanged(Editable s) {
+////                            //Вам приходит на вход текст поиска - ищем его - в бд, через АПИ (сервер в инете) и т.д.
+////                            Toast.makeText(getApplicationContext(), s.toString(), Toast.LENGTH_SHORT).show();
+////                        }
+////                    });
+////                }
+////            }
+//            case R.id.update_context: {
+//                //menuListAdapter.editItem(2500);
+//                break;
+//            }
+//            case R.id.remove_context: {
+//                //menuListAdapter.removeElement();
+//                break;
+//            }
+//            case R.id.clear_context: {
+//                //menuListAdapter.clearList();
+//                break;
+//            }
+//            case 12345: {
+//                Toast.makeText(getContext(), "Был нажат доп. элемент попап меню",
+//                        Toast.LENGTH_SHORT).show();
+//            }
+////            default: {
+////                if(id != R.id.menu_more) {
+////                    Toast.makeText(getContext(), getString(R.string.action_not_found),
+////                            Toast.LENGTH_SHORT).show();
+////                }
+////            }
+//
+//            //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        }
+//    }
 
     private void initFonts() {
         weatherFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/weather.ttf"); //если в MainActivity, то getActivity(). не нужен
@@ -232,9 +256,14 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData, IF
     @Override
     public void showWeatherData(WeatherRequestRestModel model) {
         townTextView.setText(model.name + ", " + model.sys.country);
-        temperatureTextView.setText("" + model.main.temp);
         pressureTextView.setText(model.main.pressure + "mm");
         windTextView.setText(model.wind.speed + "m/s");
+
+        int temperatureInteger = (int) Math.round(model.main.temp);
+        String temperature = Integer.toString(temperatureInteger);
+        if (temperatureInteger > 0) temperature = "+" + temperature;
+        else if (temperatureInteger < 0) temperature = "-" + temperature;
+        temperatureTextView.setText(temperature);
 
         // далее установка картинки погоды
         String skyPictureName;
@@ -321,12 +350,18 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData, IF
 
     @Override
     public void show5DaysData(ForecastLevel1_RequestModel model) {
-        lastUpdateTextView.setText(model.list.get(0).dtTxt + " ok ");
 
+        for (int i = 0; i < 40; i++) {
+            String nextDateAndTime = model.list.get(i).dtTxt;
+            String nextDate = nextDateAndTime.substring(0, 10);
+            String nextTime = nextDateAndTime.substring(11, 16);
+            String nextSky = Integer.toString(model.list.get(i).weather.get(0).id);
 
-        String nextDateAndTime = model.list.get(0).dtTxt;
-        String nextDate = nextDateAndTime.substring(0, 10);
-        String nextTime = nextDateAndTime.substring(11, 17);
-        adapter.updateItem(nextDate, 1);
+            int nextTempInteger = (int) Math.round((model.list.get(i).main.temp));
+            String nextTemp = Integer.toString(nextTempInteger);
+            if (nextTempInteger > 0) nextTemp = "+" + nextTemp;
+            else if (nextTempInteger < 0) nextTemp = "-" + nextTemp;
+            adapter.updateItem(nextDate, nextTime, nextSky, nextTemp, i);
+        }
     }
 }

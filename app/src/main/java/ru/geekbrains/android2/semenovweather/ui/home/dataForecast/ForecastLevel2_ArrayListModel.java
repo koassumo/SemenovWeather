@@ -7,7 +7,7 @@ import java.util.List;
 
 public class ForecastLevel2_ArrayListModel {
 
-    @SerializedName("weather") public List<ForecastLevel3_WeatherModel> forecastLevel3WeatherModel5Days = new ArrayList<ForecastLevel3_WeatherModel>();
+    @SerializedName("weather") public List<ForecastLevel3_WeatherModel> weather = new ArrayList<ForecastLevel3_WeatherModel>();
     @SerializedName("main") public ForecastLevel3_MainModel main;
     @SerializedName("dt_txt") public String dtTxt;
 
