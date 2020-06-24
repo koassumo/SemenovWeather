@@ -321,6 +321,7 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData, IF
 
     @Override
     public void show5DaysData(WeatherRequest5DaysModel model) {
-        lastUpdateTextView.setText(model.cnt + " ok ");
+        lastUpdateTextView.setText(model.list.get(0).dtTxt + " ok ");
+        adapter.updateItem(model.list.get(0).dtTxt, 1);
     }
 }
