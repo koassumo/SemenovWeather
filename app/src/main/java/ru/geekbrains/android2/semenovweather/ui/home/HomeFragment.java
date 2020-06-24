@@ -29,8 +29,8 @@ import java.util.Date;
 import java.util.List;
 
 import ru.geekbrains.android2.semenovweather.R;
-import ru.geekbrains.android2.semenovweather.ui.home.data.WeatherRequestRestModel;
-import ru.geekbrains.android2.semenovweather.ui.home.data5Days.WeatherRequest5DaysModel;
+import ru.geekbrains.android2.semenovweather.ui.home.dataCurrentWeather.WeatherRequestRestModel;
+import ru.geekbrains.android2.semenovweather.ui.home.dataForecast.ForecastLevel1_RequestModel;
 
 public class HomeFragment extends Fragment implements ListenerNewWeatherData, IFragmentList {
 
@@ -95,7 +95,7 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData, IF
 
     private List<String> initData() {
         List<String> list = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 40; i++) {
             list.add(String.format("Element %d", i));
         }
         return list;
@@ -320,8 +320,13 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData, IF
     }
 
     @Override
-    public void show5DaysData(WeatherRequest5DaysModel model) {
+    public void show5DaysData(ForecastLevel1_RequestModel model) {
         lastUpdateTextView.setText(model.list.get(0).dtTxt + " ok ");
-        adapter.updateItem(model.list.get(0).dtTxt, 1);
+
+
+        String nextDateAndTime = model.list.get(0).dtTxt;
+        String nextDate = nextDateAndTime.substring(0, 10);
+        String nextTime = nextDateAndTime.substring(11, 17);
+        adapter.updateItem(nextDate, 1);
     }
 }

@@ -99,7 +99,7 @@ public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataA
         private TextView textElement;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            textElement = itemView.findViewById(R.id.textStudentFirstName);
+            textElement = itemView.findViewById(R.id.textForecastDate);
         }
         public TextView getTextElement() {
             return textElement;

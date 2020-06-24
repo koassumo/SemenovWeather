@@ -1,4 +1,4 @@
-package ru.geekbrains.android2.semenovweather.ui.home.data;
+package ru.geekbrains.android2.semenovweather.ui.home.dataCurrentWeather;
 
 import com.google.gson.annotations.SerializedName;
 

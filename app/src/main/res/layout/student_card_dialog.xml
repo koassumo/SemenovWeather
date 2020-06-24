@@ -4,14 +4,14 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/textStudentFirstName"
+        android:id="@+id/textForecastDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="TextView"
         android:textSize="20sp" />
 
     <TextView
-        android:id="@+id/textStudentLastName"
+        android:id="@+id/textForecastTemperature"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="TextView"

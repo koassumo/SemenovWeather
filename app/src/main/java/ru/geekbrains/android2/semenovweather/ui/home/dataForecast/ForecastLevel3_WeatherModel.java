@@ -1,11 +1,10 @@
-package ru.geekbrains.android2.semenovweather.ui.home.data5Days;
+package ru.geekbrains.android2.semenovweather.ui.home.dataForecast;
 
 import com.google.gson.annotations.SerializedName;
 
-public class WeatherModel5Days {
+public class ForecastLevel3_WeatherModel {
 
     @SerializedName("id") public int id;
-    @SerializedName("main") public String main;
     @SerializedName("description") public String description;
     @SerializedName("icon") public String icon;
 }

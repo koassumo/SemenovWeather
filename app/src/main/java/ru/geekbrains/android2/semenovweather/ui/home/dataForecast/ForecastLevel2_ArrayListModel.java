@@ -1,16 +1,16 @@
-package ru.geekbrains.android2.semenovweather.ui.home.data5Days;
+package ru.geekbrains.android2.semenovweather.ui.home.dataForecast;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.geekbrains.android2.semenovweather.ui.home.data.WeatherRestModel;
+public class ForecastLevel2_ArrayListModel {
 
-public class ListModel5Days {
-
-    @SerializedName("weather") public List<WeatherModel5Days> weatherModel5Days = new ArrayList<WeatherModel5Days>();
+    @SerializedName("weather") public List<ForecastLevel3_WeatherModel> forecastLevel3WeatherModel5Days = new ArrayList<ForecastLevel3_WeatherModel>();
+    @SerializedName("main") public ForecastLevel3_MainModel main;
     @SerializedName("dt_txt") public String dtTxt;
+
 
     //    @SerializedName("list") public array[] weather;
 //    @SerializedName("description") public String description;

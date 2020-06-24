@@ -99,7 +99,7 @@ public class RecyclerDataAdapterDays extends RecyclerView.Adapter<RecyclerDataAd
         private TextView textElement;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            textElement = itemView.findViewById(R.id.textStudentFirstName);
+            textElement = itemView.findViewById(R.id.textForecastDate);
         }
         public TextView getTextElement() {
             return textElement;
