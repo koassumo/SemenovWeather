@@ -1,5 +1,7 @@
 package ru.geekbrains.android2.semenovweather.ui.home;
 
+import android.app.Activity;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +20,10 @@ public class RecyclerDataAdapterDays extends RecyclerView.Adapter<RecyclerDataAd
     private List<String> dataTime;
     private List<String> dataSky;
     private List<String> dataTemp;
-//    private Context context;
     private Fragment fragment;
     private int menuPosition;
     private int selectedPosition = 0;
+    Typeface weatherFont;
 
     public RecyclerDataAdapterDays(List<String> dataDate, List<String> dataTime, List<String> dataSky, List<String> dataTemp, Fragment fragment) {
         this.dataDate = dataDate;
@@ -34,7 +36,6 @@ public class RecyclerDataAdapterDays extends RecyclerView.Adapter<RecyclerDataAd
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        //context = parent.getContext();
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.recycle_view_days_item, parent, false);
         return new ViewHolder(view);
@@ -49,7 +50,6 @@ public class RecyclerDataAdapterDays extends RecyclerView.Adapter<RecyclerDataAd
         // Заполнение элементов холдера
         TextView textElement = holder.getTextElement();
         textElement.setText(dataDate.get(position));
-
         TextView textElementTime = holder.getTextElementTime();
         textElementTime.setText(dataTime.get(position));
         TextView textElementSky = holder.getTextElementSky();
@@ -57,33 +57,12 @@ public class RecyclerDataAdapterDays extends RecyclerView.Adapter<RecyclerDataAd
         TextView textElementTemp = holder.getTextElementTemp();
         textElementTemp.setText(dataTemp.get(position));
 
-        // Определяем текущую позицию в списке
-        textElement.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                menuPosition = position;
-                return false;
-            }
-        });
-
-        // Так регистрируется контекстное меню
-        if (fragment != null){
-            fragment.registerForContextMenu(textElement);
-        }
     }
 
     @Override
     public int getItemCount() {
         return dataDate == null ? 0 : dataDate.size();
     }
-//    // endregion
-//
-//    // region Изменение списка
-//    // Добавить элемент в список
-//    public void addItem(String element){
-//        data.add(element);
-//        notifyItemInserted(data.size()-1);
-//    }
 
     // Заменить элемент в списке
     public void updateItem(String forecastDate, String forecastTime, String forecastSky, String forecastTemp, int position){
@@ -94,33 +73,21 @@ public class RecyclerDataAdapterDays extends RecyclerView.Adapter<RecyclerDataAd
         notifyItemChanged(position);
     }
 
-//    // Удалить элемент из списка
-//    public void removeItem(int position){
-//        data.remove(position);
-//        notifyItemRemoved(position);
-//    }
-//
-//    // Очистить список
-//    public void clearItems(){
-//        data.clear();
-//        notifyDataSetChanged();
-//    }
-//    // endregion
-
-    public int getMenuPosition() {
-        return menuPosition;
-    }
-
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView textElement;
         private TextView textElementTime;
         private TextView textElementSky;
         private TextView textElementTemp;
+        Typeface weatherFont = Typeface.createFromAsset(itemView.getContext().getAssets(), "fonts/weather.ttf");
+
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             textElement = itemView.findViewById(R.id.textForecastDate);
             textElementTime = itemView.findViewById(R.id.textForecastTime);
-            textElementSky = itemView.findViewById(R.id.textForecastSky);
+            textElementSky = (TextView) itemView.findViewById(R.id.textForecastSky);
+            //Typeface weatherFont = Typeface.createFromAsset(itemView.getContext().getAssets(), "fonts/weather.ttf");
+            textElementSky.setTypeface(weatherFont);
             textElementTemp = itemView.findViewById(R.id.textForecastTemperature);
         }
         public TextView getTextElement() {
@@ -136,51 +103,5 @@ public class RecyclerDataAdapterDays extends RecyclerView.Adapter<RecyclerDataAd
             return textElementTemp;
         }
     }
-
-
-
-//    private void setText(@NonNull ViewHolder holder, final int position) {
-//        holder.listItemTextView.setText(data[position]);
-//    }
-//
-//    private void setOnItemClickBehavior(@NonNull ViewHolder holder, final int position) {
-//        holder.itemView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                selectedPosition = position;
-//                notifyDataSetChanged();
-//            }
-//        });
-//    }
-//
-//    private void highlightSelectedPosition(@NonNull ViewHolder holder, final int position) {
-//        if(position == selectedPosition) {
-//            int color = ContextCompat.getColor(context, R.color.colorPrimaryDark);
-//            holder.itemView.setBackgroundColor(color);
-//        }
-//        else {
-//            int color = ContextCompat.getColor(context, android.R.color.transparent);
-//            holder.itemView.setBackgroundColor(color);
-//        }
-//    }
-//
-//    @Override
-//    public int getItemCount() {
-//        return data == null ? 0 : data.length;
-//    }
-//
-//    class ViewHolder extends RecyclerView.ViewHolder {
-//        TextView listItemTextView;
-//        View itemView;
-//        ViewHolder(@NonNull View itemView) {
-//            super(itemView);
-//            this.itemView = itemView;
-//            initViews(itemView);
-//        }
-//
-//        private void initViews(View itemView) {
-//            listItemTextView = itemView.findViewById(R.id.textStudentFirstName);
-//        }
-//    }
 
 }

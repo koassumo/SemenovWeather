@@ -24,7 +24,11 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -34,6 +38,18 @@ import ru.geekbrains.android2.semenovweather.ui.home.dataForecast.ForecastLevel1
 
 public class HomeFragment extends Fragment implements ListenerNewWeatherData {
 
+    final int GROUP_THUNDERSTORM = 2;
+    final int GROUP_DRIZZLE = 3;
+    final int DRIZZLE_LIGHT = 301;
+    final int GROUP_RAIN = 5;
+    final int RAIN_LIGHT = 501;
+    final int GROUP_SNOW = 6;
+    final int GROUP_FOG = 7;
+    final int GROUP_CLOUDS = 8;
+    final int CLOUDS_CLEAR = 800;
+    final int CLOUDS_FEW = 801;
+    final int CLOUDS_BROKEN = 802;
+
     private TextView townTextView;
     private TextView temperatureTextView;
     private TextView pressureTextView;
@@ -42,6 +58,7 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
     private TextView lastUpdateTextView;
     private ImageView skyImageView;
     private View changeTownBtn;
+    private TextView textForecastSky;
 
     private final String townTextKey = "town_text_key";
 
@@ -70,6 +87,7 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
         lastUpdateTextView = view.findViewById(R.id.lastUpdateTextView);
         skyImageView = view.findViewById(R.id.skyImageView);
         changeTownBtn = view.findViewById(R.id.changeTownBtn);
+        textForecastSky = view.findViewById(R.id.textForecastSky);
         //        searchEditText = findViewById(R.id.searchEditText);
 
         initFonts();
@@ -226,7 +244,7 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
 
     private void initFonts() {
         weatherFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/weather.ttf"); //если в MainActivity, то getActivity(). не нужен
-        skyTextView.setTypeface(weatherFont);
+        temperatureTextView.setTypeface(weatherFont);
     }
 
     private void setOnChangeTownBtnClick() {
@@ -254,10 +272,14 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
     }
 
     @Override
-    public void showWeatherData(WeatherRequestRestModel model) {
+    public void showCurrentWeatherData(WeatherRequestRestModel model) {
         townTextView.setText(model.name + ", " + model.sys.country);
-        pressureTextView.setText(model.main.pressure + "mm");
-        windTextView.setText(model.wind.speed + "m/s");
+
+        int pressureInteger = (int) Math.round(model.main.pressure * 0.750063755419211);
+        pressureTextView.setText(pressureInteger + " мм рт ст");
+
+        int windInteger = (int) Math.round(model.wind.speed);
+        windTextView.setText(windInteger + " м/с");
 
         int temperatureInteger = (int) Math.round(model.main.temp);
         String temperature = Integer.toString(temperatureInteger);
@@ -266,23 +288,71 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
         temperatureTextView.setText(temperature);
 
         // далее установка картинки погоды
-        String skyPictureName;
-        final int GROUP_THUNDERSTORM = 2;
-        final int GROUP_DRIZZLE = 3;
-        final int DRIZZLE_LIGHT = 301;
-        final int GROUP_RAIN = 5;
-        final int RAIN_LIGHT = 501;
-        final int GROUP_SNOW = 6;
-        final int GROUP_FOG = 7;
-        final int GROUP_CLOUDS = 8;
-        final int CLOUDS_CLEAR = 800;
-        final int CLOUDS_FEW = 801;
-        final int CLOUDS_BROKEN = 802;
 
         long sunrise = model.sys.sunrise * 1000;
         long sunset = model.sys.sunset * 1000;
-
         int idWeather = model.weather[0].id;
+
+        String skyPictureName = defineSkyWeatherPicture(sunrise, sunset, idWeather);
+
+        Resources res = getResources();
+        int resID = res.getIdentifier(skyPictureName, "drawable", getContext().getPackageName());
+        skyImageView.setImageResource(resID);
+
+//        String icon = "";
+//        String rrr = "z_thunder_white";
+//        icon = getString(R.string.rrr);
+//        temperatureTextView.setText(icon);
+    }
+
+    @Override
+    public void show5DaysForecastData(ForecastLevel1_RequestModel model) {
+
+        for (int i = 0; i < 40; i++) {
+            // формат nextDateAndTime = "2020-06-24 15:00"
+            String nextDateAndTime = model.list.get(i).dtTxt;
+
+            String greenwichDate = nextDateAndTime.substring(0, 10);
+            String moscowDate = greenwichDate;
+            String greenwichTime = nextDateAndTime.substring(11, 13);
+            int moscowTimeInteger = Integer.parseInt(greenwichTime) + 3;
+            //boolean isAfterMidNight = false;
+            if (moscowTimeInteger >= 24) {
+                moscowTimeInteger -= 24;
+                SimpleDateFormat gsonFormatter = new SimpleDateFormat("yyyy-MM-dd");//задаю формат даты
+                Date date = null;
+                try {
+                    date = gsonFormatter.parse(moscowDate);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                Calendar instance = Calendar.getInstance();
+                instance.setTime(date); //устанавливаем дату, с которой будет производить операции
+                instance.add(Calendar.DAY_OF_MONTH, 1);// прибавляем 3 дня к установленной дате
+                moscowDate = gsonFormatter.format(instance.getTime()); // получаем измененную дату
+            }
+            String moscowTime = moscowTimeInteger + ":00";
+
+            String nextSky = Integer.toString(model.list.get(i).weather.get(0).id);
+
+            int nextTempInteger = (int) Math.round((model.list.get(i).main.temp));
+            String nextTemp = Integer.toString(nextTempInteger);
+            if (nextTempInteger > 0) nextTemp = "+" + nextTemp;
+            else if (nextTempInteger < 0) nextTemp = "-" + nextTemp;
+
+//            long sunrise1 = model.sity.sunrise * 1000;
+//            long sunset1 = model.sity.sunset * 1000;
+
+            int idWeather = model.list.get(i).weather.get(0).id;
+            String icon = defineSkyWeatherIcon(0,1, idWeather);
+
+            adapter.updateItem(moscowDate, moscowTime, icon, nextTemp, i);
+        }
+    }
+
+    public String defineSkyWeatherPicture(long sunrise, long sunset, int idWeather) {
+        String skyPictureName;
+
         int idWeatherGroup = idWeather / 100;
 
         skyPictureName = "z_snow_white";
@@ -343,25 +413,72 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
                 }
             }
         }
-        Resources res = getResources();
-        int resID = res.getIdentifier(skyPictureName, "drawable", getContext().getPackageName());
-        skyImageView.setImageResource(resID);
+        return skyPictureName;
     }
 
-    @Override
-    public void show5DaysData(ForecastLevel1_RequestModel model) {
 
-        for (int i = 0; i < 40; i++) {
-            String nextDateAndTime = model.list.get(i).dtTxt;
-            String nextDate = nextDateAndTime.substring(0, 10);
-            String nextTime = nextDateAndTime.substring(11, 16);
-            String nextSky = Integer.toString(model.list.get(i).weather.get(0).id);
+    public String defineSkyWeatherIcon(long sunrise, long sunset, int idWeather) {
+        String icon = "";
 
-            int nextTempInteger = (int) Math.round((model.list.get(i).main.temp));
-            String nextTemp = Integer.toString(nextTempInteger);
-            if (nextTempInteger > 0) nextTemp = "+" + nextTemp;
-            else if (nextTempInteger < 0) nextTemp = "-" + nextTemp;
-            adapter.updateItem(nextDate, nextTime, nextSky, nextTemp, i);
+        int idWeatherGroup = idWeather / 100;
+
+        switch (idWeatherGroup) {
+            case GROUP_THUNDERSTORM: {
+                icon = getString(R.string.weather_thunder);
+                break;
+            }
+            case GROUP_DRIZZLE: {
+                if (idWeather <= DRIZZLE_LIGHT) {
+                    icon = getString(R.string.weather_drizzle);
+                } else {
+                    icon = getString(R.string.weather_rainy);
+                }
+                break;
+            }
+            case GROUP_RAIN: {
+                if (idWeather <= RAIN_LIGHT) {
+                    icon = getString(R.string.weather_drizzle);
+                } else {
+                    icon = getString(R.string.weather_rainy);
+                }
+                break;
+            }
+            case GROUP_SNOW: {
+                icon = getString(R.string.weather_snowy);
+                break;
+            }
+            case GROUP_FOG: {
+                icon = getString(R.string.weather_foggy);
+                break;
+            }
+            case GROUP_CLOUDS: {
+                if (idWeather > CLOUDS_BROKEN) {
+                    icon = getString(R.string.weather_cloudy);
+                    break;
+                }
+                if (idWeather == CLOUDS_BROKEN) {
+                    icon = getString(R.string.weather_cloudy);
+                    break;
+                }
+                if (idWeather == CLOUDS_FEW) {
+                    long currentTime = new Date().getTime(); // для дневного времени отображается солнце, для ночного - луна
+                    if (currentTime >= sunrise && currentTime < sunset) {
+                        icon = getString(R.string.weather_sunny);
+                    } else {
+                        icon = getString(R.string.weather_clear_night);
+                    }
+                    break;
+                }
+                if (idWeather == CLOUDS_CLEAR) {
+                    long currentTime = new Date().getTime();
+                    if (currentTime >= sunrise && currentTime < sunset) {
+                        icon = getString(R.string.weather_sunny);
+                    } else {
+                        icon = getString(R.string.weather_clear_night);
+                    }
+                }
+            }
         }
+        return icon;
     }
 }

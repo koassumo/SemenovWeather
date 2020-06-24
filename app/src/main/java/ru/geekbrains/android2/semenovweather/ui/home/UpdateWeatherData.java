@@ -24,7 +24,7 @@ public class UpdateWeatherData {
                     public void onResponse(@NonNull Call<WeatherRequestRestModel> call,
                                            @NonNull Response<WeatherRequestRestModel> response) {
                         if (response.body() != null && response.isSuccessful()) {
-                            homeFragment.showWeatherData(response.body());
+                            homeFragment.showCurrentWeatherData(response.body());
                         } else {
                             //Похоже, код у нас не в диапазоне [200..300) и случилась ошибка
                             //обрабатываем ее
@@ -54,7 +54,7 @@ public class UpdateWeatherData {
                     public void onResponse(@NonNull Call<ForecastLevel1_RequestModel> call,
                                            @NonNull Response<ForecastLevel1_RequestModel> response) {
                         if (response.body() != null && response.isSuccessful()) {
-                            homeFragment.show5DaysData(response.body());
+                            homeFragment.show5DaysForecastData(response.body());
                         } else {
                             if (response.code() == 500) {
                             } else if (response.code() == 401) {

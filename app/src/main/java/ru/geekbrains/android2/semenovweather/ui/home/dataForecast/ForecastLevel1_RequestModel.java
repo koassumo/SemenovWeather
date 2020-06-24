@@ -10,4 +10,5 @@ public class ForecastLevel1_RequestModel {
     @SerializedName("list") public List<ForecastLevel2_ArrayListModel> list = new ArrayList<ForecastLevel2_ArrayListModel>();
     //public ListModel5Days[] list;
     @SerializedName("cod") public int cod;
+    @SerializedName("sity") public ForecastLevel2_SityModel sity;
 }
