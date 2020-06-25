@@ -6,15 +6,11 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,7 +20,6 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,6 +33,8 @@ import ru.geekbrains.android2.semenovweather.ui.home.dataForecast.ForecastLevel1
 
 public class HomeFragment extends Fragment implements ListenerNewWeatherData {
 
+    public static final int FORECAST_NUMBER_OF_TIME = 40;
+    final double FACTOR_HECTOPASCAL_TO_MM_RT_ST = 0.750063755419211;
     final int GROUP_THUNDERSTORM = 2;
     final int GROUP_DRIZZLE = 3;
     final int DRIZZLE_LIGHT = 301;
@@ -60,7 +57,7 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
     private View changeTownBtn;
     private TextView textForecastSky;
 
-    private final String townTextKey = "town_text_key";
+    private final String TOWN_TEXT_KEY = "town_text_key";
 
     private final Handler handler = new Handler();
     Typeface weatherFont;
@@ -107,40 +104,19 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
         recyclerView.setLayoutManager(layoutManager);
 
         // Устанавливаем адаптер
-        adapter = new RecyclerDataAdapterDays(initData(), initTime(), initSky(), initTemp(), this);
+        List<String> listDate = new ArrayList<>();
+        List<String> listTime = new ArrayList<>();
+        List<String> listSky = new ArrayList<>();
+        List<String> listTemp = new ArrayList<>();
+        for (int i = 0; i < FORECAST_NUMBER_OF_TIME; i++) {
+            listDate.add(String.format("%d", i));
+            listTime.add("");
+            listSky.add("");
+            listTemp.add("");
+        }
+
+        adapter = new RecyclerDataAdapterDays(listDate, listTime, listSky, listTemp, this);
         recyclerView.setAdapter(adapter);
-    }
-
-    private List<String> initData() {
-        List<String> list = new ArrayList<>();
-        for (int i = 0; i < 40; i++) {
-            list.add(String.format("Element %d", i));
-        }
-        return list;
-    }
-
-    private List<String> initTime() {
-        List<String> listTime = new ArrayList<>();
-        for (int i = 0; i < 40; i++) {
-            listTime.add(String.format("Time %d", i));
-        }
-        return listTime;
-    }
-
-    private List<String> initSky() {
-        List<String> list = new ArrayList<>();
-        for (int i = 0; i < 40; i++) {
-            list.add(String.format("%d", i));
-        }
-        return list;
-    }
-
-    private List<String> initTemp() {
-        List<String> listTime = new ArrayList<>();
-        for (int i = 0; i < 40; i++) {
-            listTime.add(String.format("+%d", i));
-        }
-        return listTime;
     }
 
 //    @Override
@@ -261,13 +237,13 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
         final SharedPreferences defaultPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         SharedPreferences.Editor editor = defaultPrefs.edit();
         String text = townTextView.getText().toString();
-        editor.putString(townTextKey, text);
+        editor.putString(TOWN_TEXT_KEY, text);
         editor.apply();
     }
 
     private void getSharedPrefs() {
         final SharedPreferences defaultPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String text = defaultPrefs.getString(townTextKey, "");
+        String text = defaultPrefs.getString(TOWN_TEXT_KEY, "");
         townTextView.setText(text);
     }
 
@@ -275,8 +251,8 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
     public void showCurrentWeatherData(WeatherRequestRestModel model) {
         townTextView.setText(model.name + ", " + model.sys.country);
 
-        int pressureInteger = (int) Math.round(model.main.pressure * 0.750063755419211);
-        pressureTextView.setText(pressureInteger + " мм рт ст");
+        int pressureInteger = (int) Math.round(model.main.pressure * FACTOR_HECTOPASCAL_TO_MM_RT_ST);
+        pressureTextView.setText(pressureInteger + " " + getString(R.string.pressure_units));
 
         int windInteger = (int) Math.round(model.wind.speed);
         windTextView.setText(windInteger + " м/с");
@@ -332,8 +308,6 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
                 moscowDate = gsonFormatter.format(instance.getTime()); // получаем измененную дату
             }
             String moscowTime = moscowTimeInteger + ":00";
-
-            String nextSky = Integer.toString(model.list.get(i).weather.get(0).id);
 
             int nextTempInteger = (int) Math.round((model.list.get(i).main.temp));
             String nextTemp = Integer.toString(nextTempInteger);

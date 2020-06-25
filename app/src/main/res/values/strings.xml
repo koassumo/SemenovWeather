@@ -54,4 +54,6 @@
     <string name="clear">clear all</string>
     <string name="element_number">номер эл-та</string>
 
+    <string name="pressure_units">мм рт.ст.</string>
+
 </resources>
