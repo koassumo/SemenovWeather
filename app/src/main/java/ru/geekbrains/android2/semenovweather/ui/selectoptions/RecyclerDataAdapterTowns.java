@@ -17,6 +17,7 @@ import ru.geekbrains.android2.semenovweather.R;
 
 public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataAdapterTowns.ViewHolder> {
     private List<String> historyList;
+    private OnItemClickListener itemClickListener;  // Слушатель будет устанавливаться извне
     private Context context;
     private Fragment fragment;
     private int menuPosition;
@@ -99,11 +100,30 @@ public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataA
         return menuPosition;
     }
 
+
+    // Интерфейс для обработки нажатий как в ListView
+    public interface OnItemClickListener {
+        void onItemClick(View view, int position);
+    }
+
+    // Сеттер слушателя нажатий
+    public void SetOnItemClickListener(OnItemClickListener itemClickListener) {
+        this.itemClickListener = itemClickListener;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView textElement;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             textElement = itemView.findViewById(R.id.textForecastDate);
+            textElement.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (itemClickListener != null) {
+                        itemClickListener.onItemClick(v, getAdapterPosition());
+                    }
+                }
+            });
         }
         public TextView getTextElement() {
             return textElement;
@@ -137,6 +157,8 @@ public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataA
             holder.itemView.setBackgroundColor(color);
         }
     }
+
+
 //
 //    @Override
 //    public int getItemCount() {

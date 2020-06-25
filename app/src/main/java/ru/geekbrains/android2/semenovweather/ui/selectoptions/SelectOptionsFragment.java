@@ -33,6 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import ru.geekbrains.android2.semenovweather.MainActivity;
 import ru.geekbrains.android2.semenovweather.R;
 
 public class SelectOptionsFragment extends Fragment implements IFragmentList {
@@ -78,6 +79,15 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
         // Устанавливаем адаптер
         adapter = new RecyclerDataAdapterTowns(initData(), this);
         recyclerView.setAdapter(adapter);
+
+        // Установим слушателя
+        adapter.SetOnItemClickListener(new RecyclerDataAdapterTowns.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                townEditText.setText(String.format("%s", ((TextView) view).getText(), position));
+                //Toast.makeText(getActivity(), String.format("%s - %d", ((TextView) view).getText(), position), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private List<String> initData() {
