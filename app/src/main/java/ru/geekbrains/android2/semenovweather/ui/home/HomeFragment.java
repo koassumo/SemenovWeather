@@ -340,11 +340,11 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
             if (nextTempInteger > 0) nextTemp = "+" + nextTemp;
             else if (nextTempInteger < 0) nextTemp = "-" + nextTemp;
 
-//            long sunrise1 = model.sity.sunrise * 1000;
-//            long sunset1 = model.sity.sunset * 1000;
+            long sunrise = model.city.sunrise * 1000;
+            long sunset = model.city.sunset * 1000;
 
             int idWeather = model.list.get(i).weather.get(0).id;
-            String icon = defineSkyWeatherIcon(0,1, idWeather);
+            String icon = defineSkyWeatherIcon(sunrise, sunset, idWeather);
 
             adapter.updateItem(moscowDate, moscowTime, icon, nextTemp, i);
         }
