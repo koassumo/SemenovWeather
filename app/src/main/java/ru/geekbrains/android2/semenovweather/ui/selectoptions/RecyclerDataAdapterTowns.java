@@ -38,9 +38,9 @@ public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataA
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
-        setText(holder, position);
-        setOnItemClickBehavior(holder, position);
-        highlightSelectedPosition(holder, position);
+//        setText(holder, position);
+//        setOnItemClickBehavior(holder, position);
+//        highlightSelectedPosition(holder, position);
 
         // Заполнение элементов холдера
         TextView textElement = holder.getTextElement();
@@ -112,9 +112,9 @@ public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataA
 
 
 
-    private void setText(@NonNull ViewHolder holder, final int position) {
-        holder.listItemTextView.setText(data[position]);
-    }
+//    private void setText(@NonNull ViewHolder holder, final int position) {
+//        holder.listItemTextView.setText(data[position]);
+//    }
 
     private void setOnItemClickBehavior(@NonNull ViewHolder holder, final int position) {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
