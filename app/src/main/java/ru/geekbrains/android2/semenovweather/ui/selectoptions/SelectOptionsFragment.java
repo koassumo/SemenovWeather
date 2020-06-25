@@ -63,7 +63,6 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
         setOnKeyEnterAfterTypeTown();
         setOnGoHelpFragmentBtnClick();
         readSharedPrefs();
-
     }
 
     private void iniList(View root) {
@@ -86,21 +85,9 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
         Set<String> historyList = readSharedPrefsList();
         //Set<String> historyList = new HashSet<>();
         historyList.add("ooo1");
-        historyList.add("ooo2");
-        historyList.add("ooo3");
-        historyList.add("ooo4");
-        historyList.add("ooo5");
-        historyList.add("ooo6");
         List<String> list = new ArrayList<String>(historyList);
-//
-//        for (int i = 0; i < 5; i++) {
-//            list.add("dsfsd" + i);
-//        }
-//        list.add(historyList.toString(0);
-
         return list;
     }
-
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -230,14 +217,14 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
     }
 
     public static void hideKeyboard(Activity activity) {
-        try{
+        try {
             InputMethodManager inputManager = (InputMethodManager) activity
                     .getSystemService(Context.INPUT_METHOD_SERVICE);
             View currentFocusedView = activity.getCurrentFocus();
             if (currentFocusedView != null) {
                 inputManager.hideSoftInputFromWindow(currentFocusedView.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -270,7 +257,7 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
     }
 
     public void showAlertDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()); 
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.exclamation)
                 .setMessage(R.string.press_button)
                 .setIcon(R.mipmap.ic_launcher_round)
@@ -298,11 +285,18 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
     private void saveSharedPrefs() {
         final SharedPreferences defaultPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         SharedPreferences.Editor editor = defaultPrefs.edit();
-        String text = townEditText.getText().toString();
-        editor.putString(TOWN_TEXT_KEY, text);
-        Set<String> historyList = new HashSet<>();
+        String textNewTown = townEditText.getText().toString();
+        editor.putString(TOWN_TEXT_KEY, textNewTown);
+        Set <String> historyList;
+        historyList = new HashSet<>(adapter.readList());
+        historyList.add(textNewTown);
+//        historyList = (Set<String>) adapter.readList();
         //adapter.getItemCount()
-        historyList.add(adapter.readItem(3));
+//        historyList.add(adapter.readItem(0));
+//        historyList.add(adapter.readItem(1));
+//        historyList.add(adapter.readItem(2));
+//        historyList.add(adapter.readItem(3));
+//        historyList.add(adapter.readItem(4));
         editor.putStringSet(HISTORY_LIST, historyList);
         editor.apply();
     }
@@ -315,18 +309,10 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
 
     private HashSet<String> readSharedPrefsList() {
         final SharedPreferences defaultPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        Boolean isSetExist = defaultPrefs.getBoolean("is_set_exist", false);
+        //Boolean isSetExist = defaultPrefs.getBoolean("is_set_exist", false);
         Set<String> defHistoryList = new HashSet<>();
-        defHistoryList.add("aaaa1");
-        if (isSetExist != true) {
-            defHistoryList.add("aaaa2");
-            defHistoryList.add("aaaa3");
-            defHistoryList.add("aaaa4");
-            return (HashSet<String>) defHistoryList;
-        }
-        else {
-            Set<String> historyList = defaultPrefs.getStringSet(HISTORY_LIST, defHistoryList);
-            return (HashSet<String>) historyList;
-        }
+        defHistoryList.add("");
+        Set<String> historyList = defaultPrefs.getStringSet(HISTORY_LIST, defHistoryList);
+        return (HashSet<String>) historyList;
     }
 }

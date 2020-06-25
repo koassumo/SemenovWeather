@@ -1,11 +1,13 @@
 package ru.geekbrains.android2.semenovweather.ui.selectoptions;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,21 +16,21 @@ import java.util.List;
 import ru.geekbrains.android2.semenovweather.R;
 
 public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataAdapterTowns.ViewHolder> {
-    private List<String> data;
-//    private Context context;
+    private List<String> historyList;
+    private Context context;
     private Fragment fragment;
     private int menuPosition;
     private int selectedPosition = 0;
 
     public RecyclerDataAdapterTowns(List<String> historyList, Fragment fragment) {
-        this.data = historyList;
+        this.historyList = historyList;
         this.fragment = fragment;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        //context = parent.getContext();
+        context = parent.getContext();
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.recycle_view_towns_item, parent, false);
         return new ViewHolder(view);
@@ -36,13 +38,13 @@ public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataA
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
-//        setText(holder, position);
-//        setOnItemClickBehavior(holder, position);
-//        highlightSelectedPosition(holder, position);
+        setText(holder, position);
+        setOnItemClickBehavior(holder, position);
+        highlightSelectedPosition(holder, position);
 
         // Заполнение элементов холдера
         TextView textElement = holder.getTextElement();
-        textElement.setText(data.get(position));
+        textElement.setText(historyList.get(position));
 
         // Определяем текущую позицию в списке
         textElement.setOnLongClickListener(new View.OnLongClickListener() {
@@ -61,31 +63,34 @@ public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataA
 
     @Override
     public int getItemCount() {
-        return data == null ? 0 : data.size();
+        return historyList == null ? 0 : historyList.size();
     }
 
     public void addItem(String element){
-        data.add(element);
-        notifyItemInserted(data.size()-1);
+        historyList.add(element);
+        notifyItemInserted(historyList.size()-1);
     }
 
     public String readItem(int position){
-        return data.get(position);
-        //notifyItemChanged(position);
+        return historyList.get(position);
+    }
+
+    public List<String> readList (){
+        return historyList;
     }
 
     public void updateItem(String element, int position){
-        data.set(position, element);
+        historyList.set(position, element);
         notifyItemChanged(position);
     }
 
     public void removeItem(int position){
-        data.remove(position);
+        historyList.remove(position);
         notifyItemRemoved(position);
     }
 
     public void clearItems(){
-        data.clear();
+        historyList.clear();
         notifyDataSetChanged();
     }
     // endregion
@@ -107,30 +112,31 @@ public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataA
 
 
 
-//    private void setText(@NonNull ViewHolder holder, final int position) {
-//        holder.listItemTextView.setText(data[position]);
-//    }
-//
-//    private void setOnItemClickBehavior(@NonNull ViewHolder holder, final int position) {
-//        holder.itemView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                selectedPosition = position;
-//                notifyDataSetChanged();
-//            }
-//        });
-//    }
-//
-//    private void highlightSelectedPosition(@NonNull ViewHolder holder, final int position) {
-//        if(position == selectedPosition) {
-//            int color = ContextCompat.getColor(context, R.color.colorPrimaryDark);
-//            holder.itemView.setBackgroundColor(color);
-//        }
-//        else {
-//            int color = ContextCompat.getColor(context, android.R.color.transparent);
-//            holder.itemView.setBackgroundColor(color);
-//        }
-//    }
+    private void setText(@NonNull ViewHolder holder, final int position) {
+        holder.listItemTextView.setText(data[position]);
+    }
+
+    private void setOnItemClickBehavior(@NonNull ViewHolder holder, final int position) {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectedPosition = position;
+                addItem("ttttttt");
+                notifyDataSetChanged();
+            }
+        });
+    }
+
+    private void highlightSelectedPosition(@NonNull ViewHolder holder, final int position) {
+        if(position == selectedPosition) {
+            int color = ContextCompat.getColor(context, R.color.colorPrimaryDark);
+            holder.itemView.setBackgroundColor(color);
+        }
+        else {
+            int color = ContextCompat.getColor(context, android.R.color.transparent);
+            holder.itemView.setBackgroundColor(color);
+        }
+    }
 //
 //    @Override
 //    public int getItemCount() {
