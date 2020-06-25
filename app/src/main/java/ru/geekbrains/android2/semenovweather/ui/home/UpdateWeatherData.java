@@ -45,7 +45,6 @@ public class UpdateWeatherData {
                 });
     }
 
-
     public void update5Days(String town) {
         OpenWeatherRepo5Days.getSingleton().getAPI5Days().loadWeather5Days(town,
                 BuildConfig.WEATHER_API_KEY, "metric")

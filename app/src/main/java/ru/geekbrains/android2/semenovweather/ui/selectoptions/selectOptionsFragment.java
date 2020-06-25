@@ -1,5 +1,7 @@
 package ru.geekbrains.android2.semenovweather.ui.selectoptions;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,6 +13,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -184,7 +188,6 @@ public class selectOptionsFragment extends Fragment implements IFragmentList {
         }
     }
 
-
     private void setOnGoHomeFragmentBtnClick() {
         goHomeFragmentBtn.setOnClickListener(v -> {
             saveSharedPrefs();
@@ -200,6 +203,7 @@ public class selectOptionsFragment extends Fragment implements IFragmentList {
             if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
                 if (townEditText.getText().toString().equals("")) AlertDialogChangeTown();
                 else {
+                    hideKeyboard((Activity) getActivity());
                     saveSharedPrefs();
                     Bundle bundle = new Bundle();
                     bundle.putString("arg", "data");
@@ -210,6 +214,19 @@ public class selectOptionsFragment extends Fragment implements IFragmentList {
             }
             return false;
         });
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        try{
+            InputMethodManager inputManager = (InputMethodManager) activity
+                    .getSystemService(Context.INPUT_METHOD_SERVICE);
+            View currentFocusedView = activity.getCurrentFocus();
+            if (currentFocusedView != null) {
+                inputManager.hideSoftInputFromWindow(currentFocusedView.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void AlertDialogChangeTown() {
@@ -226,11 +243,11 @@ public class selectOptionsFragment extends Fragment implements IFragmentList {
                 // запре на клик вне окна и на выход кнопкой back
                 .setCancelable(false)
                 // устанавливаем кнопку (название кнопки также можно задавать строкой)
-                .setPositiveButton("Готово", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.button_ok), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         EditText editText = contentView.findViewById(R.id.editText);
-                        Toast.makeText(getActivity(), String.format("Введен город: %s", editText.getText().toString()), Toast.LENGTH_SHORT)
+                        Toast.makeText(getActivity(), String.format(getString(R.string.town_is_entered), editText.getText().toString()), Toast.LENGTH_SHORT)
                                 .show();
                         townEditText.setText(editText.getText().toString());
                     }
@@ -248,7 +265,7 @@ public class selectOptionsFragment extends Fragment implements IFragmentList {
                 .setPositiveButton(R.string.button,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                Toast.makeText(getActivity(), "Кнопка нажата", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), getString(R.string.key_is_pressed), Toast.LENGTH_SHORT).show();
                             }
                         });
         AlertDialog alert = builder.create();

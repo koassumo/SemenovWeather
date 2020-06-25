@@ -56,7 +56,6 @@ public class RecyclerDataAdapterDays extends RecyclerView.Adapter<RecyclerDataAd
         textElementSky.setText(dataSky.get(position));
         TextView textElementTemp = holder.getTextElementTemp();
         textElementTemp.setText(dataTemp.get(position));
-
     }
 
     @Override
@@ -80,16 +79,15 @@ public class RecyclerDataAdapterDays extends RecyclerView.Adapter<RecyclerDataAd
         private TextView textElementTemp;
         Typeface weatherFont = Typeface.createFromAsset(itemView.getContext().getAssets(), "fonts/weather.ttf");
 
-
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             textElement = itemView.findViewById(R.id.textForecastDate);
             textElementTime = itemView.findViewById(R.id.textForecastTime);
-            textElementSky = (TextView) itemView.findViewById(R.id.textForecastSky);
-            //Typeface weatherFont = Typeface.createFromAsset(itemView.getContext().getAssets(), "fonts/weather.ttf");
+            textElementSky = itemView.findViewById(R.id.textForecastSky);
             textElementSky.setTypeface(weatherFont);
             textElementTemp = itemView.findViewById(R.id.textForecastTemperature);
         }
+
         public TextView getTextElement() {
             return textElement;
         }

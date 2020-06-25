@@ -255,7 +255,7 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
         pressureTextView.setText(pressureInteger + " " + getString(R.string.pressure_units));
 
         int windInteger = (int) Math.round(model.wind.speed);
-        windTextView.setText(windInteger + " м/с");
+        windTextView.setText(windInteger + " " + getString(R.string.wind_units));
 
         int temperatureInteger = (int) Math.round(model.main.temp);
         String temperature = Integer.toString(temperatureInteger);
@@ -274,11 +274,6 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
         Resources res = getResources();
         int resID = res.getIdentifier(skyPictureName, "drawable", getContext().getPackageName());
         skyImageView.setImageResource(resID);
-
-//        String icon = "";
-//        String rrr = "z_thunder_white";
-//        icon = getString(R.string.rrr);
-//        temperatureTextView.setText(icon);
     }
 
     @Override

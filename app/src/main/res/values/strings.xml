@@ -55,5 +55,9 @@
     <string name="element_number">номер эл-та</string>
 
     <string name="pressure_units">мм рт.ст.</string>
+    <string name="wind_units">м/с</string>
+    <string name="button_ok">Готово</string>
+    <string name="town_is_entered">Введен город: %s</string>
+    <string name="key_is_pressed">Кнопка нажата</string>
 
 </resources>
