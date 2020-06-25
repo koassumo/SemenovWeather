@@ -20,8 +20,8 @@ public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataA
     private int menuPosition;
     private int selectedPosition = 0;
 
-    public RecyclerDataAdapterTowns(List<String> data, Fragment fragment) {
-        this.data = data;
+    public RecyclerDataAdapterTowns(List<String> historyList, Fragment fragment) {
+        this.data = historyList;
         this.fragment = fragment;
     }
 
@@ -63,28 +63,27 @@ public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataA
     public int getItemCount() {
         return data == null ? 0 : data.size();
     }
-    // endregion
 
-    // region Изменение списка
-    // Добавить элемент в список
     public void addItem(String element){
         data.add(element);
         notifyItemInserted(data.size()-1);
     }
 
-    // Заменить элемент в списке
+    public String readItem(int position){
+        return data.get(position);
+        //notifyItemChanged(position);
+    }
+
     public void updateItem(String element, int position){
         data.set(position, element);
         notifyItemChanged(position);
     }
 
-    // Удалить элемент из списка
     public void removeItem(int position){
         data.remove(position);
         notifyItemRemoved(position);
     }
 
-    // Очистить список
     public void clearItems(){
         data.clear();
         notifyDataSetChanged();

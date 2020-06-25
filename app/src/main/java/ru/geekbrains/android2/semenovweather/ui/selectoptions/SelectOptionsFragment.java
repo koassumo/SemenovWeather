@@ -13,7 +13,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,17 +29,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import ru.geekbrains.android2.semenovweather.MainActivity;
 import ru.geekbrains.android2.semenovweather.R;
-import ru.geekbrains.android2.semenovweather.ui.home.RecyclerDataAdapterDays;
 
-public class selectOptionsFragment extends Fragment implements IFragmentList {
+public class SelectOptionsFragment extends Fragment implements IFragmentList {
+    private final String TOWN_TEXT_KEY = "town_text_key";
+    private final String HISTORY_LIST = "history_list";
     TextView townEditText;
     Button goHomeFragmentBtn;
     Button goHelpFragmentBtn;
-    private final String townTextKey = "town_text_key";
 
     private RecyclerDataAdapterTowns adapter;
 
@@ -82,12 +82,25 @@ public class selectOptionsFragment extends Fragment implements IFragmentList {
     }
 
     private List<String> initData() {
-        List<String> list = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            list.add(String.format("Element %d", i));
-        }
+        //List<String> list = new ArrayList<>();
+        Set<String> historyList = readSharedPrefsList();
+        //Set<String> historyList = new HashSet<>();
+        historyList.add("ooo1");
+        historyList.add("ooo2");
+        historyList.add("ooo3");
+        historyList.add("ooo4");
+        historyList.add("ooo5");
+        historyList.add("ooo6");
+        List<String> list = new ArrayList<String>(historyList);
+//
+//        for (int i = 0; i < 5; i++) {
+//            list.add("dsfsd" + i);
+//        }
+//        list.add(historyList.toString(0);
+
         return list;
     }
+
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -286,13 +299,34 @@ public class selectOptionsFragment extends Fragment implements IFragmentList {
         final SharedPreferences defaultPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         SharedPreferences.Editor editor = defaultPrefs.edit();
         String text = townEditText.getText().toString();
-        editor.putString(townTextKey, text);
+        editor.putString(TOWN_TEXT_KEY, text);
+        Set<String> historyList = new HashSet<>();
+        //adapter.getItemCount()
+        historyList.add(adapter.readItem(3));
+        editor.putStringSet(HISTORY_LIST, historyList);
         editor.apply();
     }
 
     private void readSharedPrefs() {
         final SharedPreferences defaultPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String text = defaultPrefs.getString(townTextKey, "");
+        String text = defaultPrefs.getString(TOWN_TEXT_KEY, "");
         townEditText.setText(text);
+    }
+
+    private HashSet<String> readSharedPrefsList() {
+        final SharedPreferences defaultPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        Boolean isSetExist = defaultPrefs.getBoolean("is_set_exist", false);
+        Set<String> defHistoryList = new HashSet<>();
+        defHistoryList.add("aaaa1");
+        if (isSetExist != true) {
+            defHistoryList.add("aaaa2");
+            defHistoryList.add("aaaa3");
+            defHistoryList.add("aaaa4");
+            return (HashSet<String>) defHistoryList;
+        }
+        else {
+            Set<String> historyList = defaultPrefs.getStringSet(HISTORY_LIST, defHistoryList);
+            return (HashSet<String>) historyList;
+        }
     }
 }

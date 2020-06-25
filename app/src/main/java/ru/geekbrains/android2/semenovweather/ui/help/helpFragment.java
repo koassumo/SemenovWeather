@@ -15,7 +15,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.button.MaterialButton;
 
 import ru.geekbrains.android2.semenovweather.R;
-import ru.geekbrains.android2.semenovweather.ui.selectoptions.selectOptionsFragment;
+import ru.geekbrains.android2.semenovweather.ui.selectoptions.SelectOptionsFragment;
 
 public class helpFragment extends Fragment {
 
@@ -41,7 +41,7 @@ public class helpFragment extends Fragment {
         goBackMainActivityBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectOptionsFragment selectOptionsFragment = new selectOptionsFragment();
+                SelectOptionsFragment selectOptionsFragment = new SelectOptionsFragment();
                 FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
                 transaction.replace(R.id.nav_host_fragment_container, selectOptionsFragment);
                 transaction.commit();

@@ -1,19 +1,13 @@
 package ru.geekbrains.android2.semenovweather;
 
 import android.content.BroadcastReceiver;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
 
-import androidx.appcompat.widget.SearchView;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -22,9 +16,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import ru.geekbrains.android2.semenovweather.ui.home.HomeFragment;
 import ru.geekbrains.android2.semenovweather.ui.home.IFragmentList;
-import ru.geekbrains.android2.semenovweather.ui.selectoptions.selectOptionsFragment;
 
 public class MainActivity extends AppCompatActivity {
 
