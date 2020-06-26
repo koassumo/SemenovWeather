@@ -94,7 +94,6 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
         //List<String> list = new ArrayList<>();
         Set<String> historyList = readSharedPrefsList();
         //Set<String> historyList = new HashSet<>();
-        historyList.add("ooo1");
         List<String> list = new ArrayList<String>(historyList);
         return list;
     }
