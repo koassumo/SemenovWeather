@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.ContextMenu;
@@ -35,6 +36,8 @@ import java.util.Set;
 
 import ru.geekbrains.android2.semenovweather.MainActivity;
 import ru.geekbrains.android2.semenovweather.R;
+import ru.geekbrains.android2.semenovweather.database.DatabaseHelper;
+import ru.geekbrains.android2.semenovweather.database.NotesTable;
 
 public class SelectOptionsFragment extends Fragment implements IFragmentList {
     private final String TOWN_TEXT_KEY = "town_text_key";
@@ -42,12 +45,14 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
     TextView townEditText;
     Button goHomeFragmentBtn;
     Button goHelpFragmentBtn;
+    SQLiteDatabase database;
 
     private RecyclerDataAdapterTowns adapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_options, container, false);
+        initDB();
         iniList(root);
 //        ((MainActivity)requireActivity()).setOptionsFragmentList(this);
 //        setHasOptionsMenu(true);
@@ -56,6 +61,13 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
         goHelpFragmentBtn = root.findViewById(R.id.goHelpFragmentBtn);
         return root;
     }
+
+    private void initDB() {
+        database = new DatabaseHelper(getContext()).getWritableDatabase();
+        NotesTable.addNote(0, database);
+        NotesTable.addNote(1, database);
+    }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -92,9 +104,15 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
 
     private List<String> initData() {
         //List<String> list = new ArrayList<>();
+        //NotesTable.addNote(elements.size(), database);
         Set<String> historyList = readSharedPrefsList();
         //Set<String> historyList = new HashSet<>();
-        List<String> list = new ArrayList<String>(historyList);
+        //List<String> list = new ArrayList<String>(historyList);
+        List<String> list = new ArrayList<>();
+        List<Integer> listInt = new ArrayList<>(NotesTable.getAllNotes(database));
+        for (Integer i: listInt) {
+            list.add(String.valueOf(i));
+        }
         return list;
     }
 

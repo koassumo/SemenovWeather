@@ -1,6 +1,7 @@
 package ru.geekbrains.android2.semenovweather.ui.selectoptions;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +15,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import ru.geekbrains.android2.semenovweather.R;
+import ru.geekbrains.android2.semenovweather.database.NotesTable;
 
 public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataAdapterTowns.ViewHolder> {
+    //private final SQLiteDatabase database;
+    private List<Integer> elements;
     private List<String> historyList;
     private OnItemClickListener itemClickListener;  // Слушатель будет устанавливаться извне
     private Context context;
@@ -26,6 +30,8 @@ public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataA
     public RecyclerDataAdapterTowns(List<String> historyList, Fragment fragment) {
         this.historyList = historyList;
         this.fragment = fragment;
+//        this.database = database;
+//        elements = NotesTable.getAllNotes(database);
     }
 
     @NonNull
@@ -46,6 +52,7 @@ public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataA
         // Заполнение элементов холдера
         TextView textElement = holder.getTextElement();
         textElement.setText(historyList.get(position));
+        //textElement.setText();
 
         // Определяем текущую позицию в списке
         textElement.setOnLongClickListener(new View.OnLongClickListener() {
@@ -69,6 +76,8 @@ public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataA
 
     public void addItem(String element){
         historyList.add(element);
+//        NotesTable.addNote(elements.size(), database);
+
         notifyItemInserted(historyList.size()-1);
     }
 
