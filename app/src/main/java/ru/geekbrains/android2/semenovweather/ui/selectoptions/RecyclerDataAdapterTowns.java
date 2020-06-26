@@ -15,11 +15,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import ru.geekbrains.android2.semenovweather.R;
+import ru.geekbrains.android2.semenovweather.database.DatabaseHelper;
 import ru.geekbrains.android2.semenovweather.database.NotesTable;
 
 public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataAdapterTowns.ViewHolder> {
     //private final SQLiteDatabase database;
-    private List<Integer> elements;
+
+    SQLiteDatabase database;
+
+//    private List<Integer> elements;
     private List<String> historyList;
     private OnItemClickListener itemClickListener;  // Слушатель будет устанавливаться извне
     private Context context;
@@ -27,10 +31,10 @@ public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataA
     private int menuPosition;
     private int selectedPosition = 0;
 
-    public RecyclerDataAdapterTowns(List<String> historyList, Fragment fragment) {
+    public RecyclerDataAdapterTowns(List<String> historyList, Fragment fragment, SQLiteDatabase database) {
         this.historyList = historyList;
         this.fragment = fragment;
-//        this.database = database;
+        this.database = database;
 //        elements = NotesTable.getAllNotes(database);
     }
 
@@ -94,13 +98,15 @@ public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataA
         notifyItemChanged(position);
     }
 
-    public void removeItem(int position){
-        historyList.remove(position);
-        notifyItemRemoved(position);
-    }
+//    public void removeItem(int position){
+//        historyList.remove(position);
+//        NotesTable.deleteNote(position, database);
+//        notifyItemRemoved(position);
+//    }
 
     public void clearItems(){
         historyList.clear();
+        NotesTable.deleteAll(database);
         notifyDataSetChanged();
     }
     // endregion

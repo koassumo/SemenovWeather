@@ -15,8 +15,8 @@ public class NotesTable {
 
     static void createTable(SQLiteDatabase database) {
         database.execSQL("CREATE TABLE " + TABLE_NAME + " (" + COLUMN_ID
-                + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_NOTE + " INTEGER);");
-        //CREATE TABLE Notes (_id INTEGER PRIMARY KEY AUTOINCREMENT, note INTEGER)
+                + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_NOTE + " TEXT);");
+        //CREATE TABLE Notes (_id INTEGER PRIMARY KEY AUTOINCREMENT, note TEXT)
     }
 
     static void onUpgrade(SQLiteDatabase database) {
@@ -24,7 +24,7 @@ public class NotesTable {
                 + " TEXT DEFAULT 'Default title'");
     }
 
-    public static void addNote(int note, SQLiteDatabase database) {
+    public static void addNote(String note, SQLiteDatabase database) {
         ContentValues values = new ContentValues();
         values.put(COLUMN_NOTE, note);
 
@@ -51,26 +51,26 @@ public class NotesTable {
         //DELETE * FROM Notes
     }
 
-    public static List<Integer> getAllNotes(SQLiteDatabase database) {
+    public static List<String> getAllNotes(SQLiteDatabase database) {
         /*Cursor cursor = database.query(TABLE_NAME, new String[]{COLUMN_NOTE}, COLUMN_NOTE + " = 1", null,
                 COLUMN_NOTE, null, "DESC");*/
         Cursor cursor = database.rawQuery("SELECT * FROM " + TABLE_NAME, null);
         return getResultFromCursor(cursor);
     }
 
-    private static List<Integer> getResultFromCursor(Cursor cursor) {
-        List<Integer> result = null;
+    private static List<String> getResultFromCursor(Cursor cursor) {
+        List<String> result = null;
 
         if(cursor != null && cursor.moveToFirst()) {//попали на первую запись, плюс вернулось true, если запись есть
             result = new ArrayList<>(cursor.getCount());
 
             int noteIdx = cursor.getColumnIndex(COLUMN_NOTE);
             do {
-                result.add(cursor.getInt(noteIdx));
+                result.add(cursor.getString(noteIdx));
             } while (cursor.moveToNext());
         }
 
         try { cursor.close(); } catch (Exception ignored) {}
-        return result == null ? new ArrayList<Integer>(0) : result;
+        return result == null ? new ArrayList<String>(0) : result;
     }
 }

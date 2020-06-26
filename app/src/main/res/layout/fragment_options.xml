@@ -44,17 +44,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/town_edit_text_hint"
-            android:inputType="text"/>
+            android:inputType="text"
+            android:textSize="20sp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycleViewTowns"
+            android:layout_width="match_parent"
+            android:layout_height="240dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/loginName" />
 
 
     </com.google.android.material.textfield.TextInputLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycleViewTowns"
-        android:layout_width="match_parent"
-        android:layout_height="210dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/loginName" />
 
 
     <CheckBox
@@ -62,7 +63,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:checked="true"
         android:text="@string/checkbox_wind_title"
         app:layout_constraintStart_toStartOf="parent"
@@ -73,11 +74,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="12dp"
         android:checked="true"
         android:text="@string/checkbox_pressure_title"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recycleViewTowns" />
+        app:layout_constraintTop_toBottomOf="@+id/loginName" />
 
     <TextView
         android:id="@+id/pressureTextView"

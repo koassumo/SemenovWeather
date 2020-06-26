@@ -2,6 +2,7 @@ package ru.geekbrains.android2.semenovweather.ui.home;
 
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,10 +29,14 @@ import java.util.Date;
 import java.util.List;
 
 import ru.geekbrains.android2.semenovweather.R;
+import ru.geekbrains.android2.semenovweather.database.DatabaseHelper;
+import ru.geekbrains.android2.semenovweather.database.NotesTable;
 import ru.geekbrains.android2.semenovweather.ui.home.dataCurrentWeather.WeatherRequestRestModel;
 import ru.geekbrains.android2.semenovweather.ui.home.dataForecast.ForecastLevel1_RequestModel;
 
 public class HomeFragment extends Fragment implements ListenerNewWeatherData {
+
+    SQLiteDatabase database;
 
     public static final int FORECAST_NUMBER_OF_TIME = 40;
     final double FACTOR_HECTOPASCAL_TO_MM_RT_ST = 0.750063755419211;
@@ -69,6 +74,7 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
+        initDB();
         initList(root);
         return root;
     }
@@ -92,6 +98,12 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
         updateWeatherData.updateByTown(townTextView.getText().toString());
         updateWeatherData.update5Days(townTextView.getText().toString());
         setOnChangeTownBtnClick();
+    }
+
+    private void initDB() {
+        database = new DatabaseHelper(getContext()).getWritableDatabase();
+        // NotesTable.deleteAll(database);
+//        NotesTable.addNote("dsf", database);
     }
 
     private void initList(View root) {
@@ -238,12 +250,13 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
         SharedPreferences.Editor editor = defaultPrefs.edit();
         String text = townTextView.getText().toString();
         editor.putString(TOWN_TEXT_KEY, text);
+        NotesTable.addNote(text, database);
         editor.apply();
     }
 
     private void getSharedPrefs() {
         final SharedPreferences defaultPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String text = defaultPrefs.getString(TOWN_TEXT_KEY, "");
+        String text = defaultPrefs.getString(TOWN_TEXT_KEY, getString(R.string.region));
         townTextView.setText(text);
     }
 

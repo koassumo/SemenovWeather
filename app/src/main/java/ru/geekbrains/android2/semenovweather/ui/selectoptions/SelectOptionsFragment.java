@@ -64,8 +64,8 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
 
     private void initDB() {
         database = new DatabaseHelper(getContext()).getWritableDatabase();
-        NotesTable.addNote(0, database);
-        NotesTable.addNote(1, database);
+//        NotesTable.deleteAll(database);
+//        NotesTable.addNote("dsf", database);
     }
 
 
@@ -89,7 +89,7 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
         recyclerView.setLayoutManager(layoutManager);
 
         // Устанавливаем адаптер
-        adapter = new RecyclerDataAdapterTowns(initData(), this);
+        adapter = new RecyclerDataAdapterTowns(initData(),this, database);
         recyclerView.setAdapter(adapter);
 
         // Установим слушателя
@@ -108,11 +108,12 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
         Set<String> historyList = readSharedPrefsList();
         //Set<String> historyList = new HashSet<>();
         //List<String> list = new ArrayList<String>(historyList);
-        List<String> list = new ArrayList<>();
-        List<Integer> listInt = new ArrayList<>(NotesTable.getAllNotes(database));
-        for (Integer i: listInt) {
-            list.add(String.valueOf(i));
-        }
+//        List<String> list = new ArrayList<>();
+//        List<Integer> listInt = new ArrayList<>(NotesTable.getAllNotes(database));
+        List<String> list = new ArrayList<>(NotesTable.getAllNotes(database));
+        //        for (Integer i: listInt) {
+//            list.add(String.valueOf(i));
+//        }
         return list;
     }
 
@@ -135,9 +136,9 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
             case R.id.update_context:
                 adapter.updateItem(String.format("Updated element %d", adapter.getMenuPosition()), adapter.getMenuPosition());
                 return true;
-            case R.id.remove_context:
-                adapter.removeItem(adapter.getMenuPosition());
-                return true;
+//            case R.id.remove_context:
+//                adapter.removeItem(adapter.getMenuPosition());
+//                return true;
             case R.id.clear_context:
                 adapter.clearItems();
                 return true;

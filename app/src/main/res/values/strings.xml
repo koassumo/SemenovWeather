@@ -12,17 +12,17 @@
     <string name="menu_slideshow">Помощь</string>
 
     <string name="home_second">Home Second</string>
-    <string name="region">Minsk</string>
+    <string name="region">London, GB</string>
     <string name="button_change_town">выбрать</string>
     <string name="button_options_select_title">настройки</string>
     <string name="desc">desc</string>
-    <string name="pressure_data">0</string>
+    <string name="pressure_data"></string>
     <string name="temperature_data">0</string>
-    <string name="wind_data">0</string>
+    <string name="wind_data"></string>
     <string name="button_back">ок</string>
     <string name="button_help">помощь</string>
     <string name="town_edit_text_hint">Ввод города</string>
-    <string name="checkbox_wind_title">ветер</string>
+    <string name="checkbox_wind_title">скорость ветра</string>
     <string name="checkbox_pressure_title">давление</string>
     <string name="button_go_url">посмотреть на яндекс</string>
 

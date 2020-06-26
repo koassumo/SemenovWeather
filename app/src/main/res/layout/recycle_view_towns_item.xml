@@ -22,7 +22,7 @@
             android:layout_height="match_parent"
             android:text="TextView"
             android:textAlignment="viewStart"
-            android:textSize="30sp" />
+            android:textSize="24sp" />
 
         <!--        <TextView-->
         <!--            android:id="@+id/textStudentLastName"-->
