@@ -36,6 +36,7 @@ import ru.geekbrains.android2.semenovweather.ui.home.dataForecast.ForecastLevel1
 
 public class HomeFragment extends Fragment implements ListenerNewWeatherData {
 
+    public static final int MSK_TIME_THREE_OUR_PLUS = 10800000;
     SQLiteDatabase database;
 
     public static final int FORECAST_NUMBER_OF_TIME = 40;
@@ -289,10 +290,22 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
         skyImageView.setImageResource(resID);
     }
 
+    public static String ConvertMilliSecondsToFormattedDate (long milliSeconds){
+        String dateFormat = "dd-MM-yyyy hh:mm";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(milliSeconds);
+        return simpleDateFormat.format(calendar.getTime());
+    }
+
+
     @Override
     public void show5DaysForecastData(ForecastLevel1_RequestModel model) {
 
+        long forecastDateAndTime = model.list.get(0).dt * 1000;
+        lastUpdateTextView.setText(ConvertMilliSecondsToFormattedDate(forecastDateAndTime + MSK_TIME_THREE_OUR_PLUS));
         for (int i = 0; i < 40; i++) {
+
             // формат nextDateAndTime = "2020-06-24 15:00"
             String nextDateAndTime = model.list.get(i).dtTxt;
 
@@ -300,7 +313,6 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
             String moscowDate = greenwichDate;
             String greenwichTime = nextDateAndTime.substring(11, 13);
             int moscowTimeInteger = Integer.parseInt(greenwichTime) + 3;
-            //boolean isAfterMidNight = false;
             if (moscowTimeInteger >= 24) {
                 moscowTimeInteger -= 24;
                 SimpleDateFormat gsonFormatter = new SimpleDateFormat("yyyy-MM-dd");//задаю формат даты
@@ -387,6 +399,7 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
                 }
                 if (idWeather == CLOUDS_CLEAR) {
                     long currentTime = new Date().getTime();
+                    //lastUpdateTextView.setText(currentTime/1000000 + "  " + sunrise/1000000 + "  "+ sunset/1000000);
                     if (currentTime >= sunrise && currentTime < sunset) {
                         skyPictureName = "z_clear_sky_white";
                     } else {
