@@ -108,18 +108,8 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
     }
 
     private List<String> initData() {
-        //List<String> list = new ArrayList<>();
-        //NotesTable.addNote(elements.size(), database);
-        //Set<String> historyList = readSharedPrefsList();
-        //Set<String> historyList = new HashSet<>();
-        //List<String> list = new ArrayList<String>(historyList);
-//        List<String> list = new ArrayList<>();
-//        List<Integer> listInt = new ArrayList<>(NotesTable.getAllNotes(database));
         List<String> list = new ArrayList<>(NotesTable.getAllNotes(database));
         Collections.reverse(list);
-        //        for (Integer i: listInt) {
-//            list.add(String.valueOf(i));
-//        }
         return list;
     }
 

@@ -5,6 +5,6 @@ import ru.geekbrains.android2.semenovweather.ui.home.dataForecast.ForecastLevel1
 
 public interface ListenerNewWeatherData {
 
-    public void showCurrentWeatherData(WeatherRequestRestModel model);
-    public void show5DaysForecastData(ForecastLevel1_RequestModel model);
+    void showCurrentWeatherData(WeatherRequestRestModel model);
+    void show5DaysForecastData(ForecastLevel1_RequestModel model);
 }
