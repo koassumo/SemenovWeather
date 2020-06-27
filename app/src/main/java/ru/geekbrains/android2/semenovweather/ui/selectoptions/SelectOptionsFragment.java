@@ -335,7 +335,7 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
 
     private void readSharedPrefs() {
         final SharedPreferences defaultPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String text = defaultPrefs.getString(TOWN_TEXT_KEY, "");
+        String text = defaultPrefs.getString(Constants.TOWN_TEXT_KEY, "");
         townEditText.setText(text);
         boolean isPressureActivated = defaultPrefs.getBoolean(Constants.PRESSURE_CHECKBOX_KEY, true);
         pressureCheckBox.setChecked(isPressureActivated);

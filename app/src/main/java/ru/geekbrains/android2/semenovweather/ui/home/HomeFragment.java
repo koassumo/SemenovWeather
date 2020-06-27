@@ -214,7 +214,6 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
         }).start();
     }
 
-
     // Запрашиваем Permission’ы для геолокации
     private void requestLocationPermissions() {
         if (!ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.CALL_PHONE)) {
@@ -405,7 +404,7 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
 
     private void readSharedPrefs() {
         final SharedPreferences defaultPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String text = defaultPrefs.getString(TOWN_TEXT_KEY, getString(R.string.region));
+        String text = defaultPrefs.getString(Constants.TOWN_TEXT_KEY, getString(R.string.region));
         townTextView.setText(text);
         isPressureActivated = defaultPrefs.getBoolean(Constants.PRESSURE_CHECKBOX_KEY, true);
         isWindActivated = defaultPrefs.getBoolean(Constants.WIND_CHECKBOX_KEY, true);
