@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +36,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import ru.geekbrains.android2.semenovweather.Constants;
 import ru.geekbrains.android2.semenovweather.MainActivity;
 import ru.geekbrains.android2.semenovweather.R;
 import ru.geekbrains.android2.semenovweather.database.DatabaseHelper;
@@ -46,6 +48,8 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
     TextView townEditText;
     Button goHomeFragmentBtn;
     Button goHelpFragmentBtn;
+    CheckBox pressureCheckBox;
+    CheckBox windCheckBox;
     SQLiteDatabase database;
 
     private RecyclerDataAdapterTowns adapter;
@@ -60,6 +64,8 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
         townEditText = root.findViewById(R.id.townSelectEditText);
         goHomeFragmentBtn = root.findViewById(R.id.goBackHomeFragmentBtn);
         goHelpFragmentBtn = root.findViewById(R.id.goHelpFragmentBtn);
+        pressureCheckBox = root.findViewById(R.id.pressureCheckBox);
+        windCheckBox = root.findViewById(R.id.windCheckBox);
         return root;
     }
 
@@ -106,7 +112,7 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
     private List<String> initData() {
         //List<String> list = new ArrayList<>();
         //NotesTable.addNote(elements.size(), database);
-        Set<String> historyList = readSharedPrefsList();
+        //Set<String> historyList = readSharedPrefsList();
         //Set<String> historyList = new HashSet<>();
         //List<String> list = new ArrayList<String>(historyList);
 //        List<String> list = new ArrayList<>();
@@ -317,17 +323,15 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
         SharedPreferences.Editor editor = defaultPrefs.edit();
         String textNewTown = townEditText.getText().toString();
         editor.putString(TOWN_TEXT_KEY, textNewTown);
-        Set <String> historyList;
-        historyList = new HashSet<>(adapter.readList());
-        historyList.add(textNewTown);
-//        historyList = (Set<String>) adapter.readList();
-        //adapter.getItemCount()
-//        historyList.add(adapter.readItem(0));
-//        historyList.add(adapter.readItem(1));
-//        historyList.add(adapter.readItem(2));
-//        historyList.add(adapter.readItem(3));
-//        historyList.add(adapter.readItem(4));
-        editor.putStringSet(HISTORY_LIST, historyList);
+        Boolean isPressureCheckBoxChecked = pressureCheckBox.isChecked();
+        editor.putBoolean(Constants.PRESSURE_CHECKBOX_KEY, isPressureCheckBoxChecked);
+        Boolean isWindCheckBoxChecked = windCheckBox.isChecked();
+        editor.putBoolean(Constants.WIND_CHECKBOX_KEY, isWindCheckBoxChecked);
+        // сохранение сета (аррей не берет)
+//        Set <String> historyList;
+//        historyList = new HashSet<>(adapter.readList());
+//        historyList.add(textNewTown);
+//        editor.putStringSet(HISTORY_LIST, historyList);
         editor.apply();
     }
 
@@ -335,14 +339,18 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
         final SharedPreferences defaultPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         String text = defaultPrefs.getString(TOWN_TEXT_KEY, "");
         townEditText.setText(text);
+        boolean isPressureActivated = defaultPrefs.getBoolean(Constants.PRESSURE_CHECKBOX_KEY, true);
+        pressureCheckBox.setChecked(isPressureActivated);
+        boolean isWindActivated = defaultPrefs.getBoolean(Constants.WIND_CHECKBOX_KEY, true);
+        windCheckBox.setChecked(isWindActivated);
     }
 
-    private HashSet<String> readSharedPrefsList() {
-        final SharedPreferences defaultPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        //Boolean isSetExist = defaultPrefs.getBoolean("is_set_exist", false);
-        Set<String> defHistoryList = new HashSet<>();
-        defHistoryList.add("");
-        Set<String> historyList = defaultPrefs.getStringSet(HISTORY_LIST, defHistoryList);
-        return (HashSet<String>) historyList;
-    }
+//    private HashSet<String> readSharedPrefsList() {
+//        final SharedPreferences defaultPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+//        //Boolean isSetExist = defaultPrefs.getBoolean("is_set_exist", false);
+//        Set<String> defHistoryList = new HashSet<>();
+//        defHistoryList.add("");
+//        Set<String> historyList = defaultPrefs.getStringSet(HISTORY_LIST, defHistoryList);
+//        return (HashSet<String>) historyList;
+//    }
 }

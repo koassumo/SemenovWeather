@@ -28,6 +28,7 @@
             android:id="@+id/textForecastTime"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:textStyle="bold"
             android:text="15:00"
             android:textAlignment="textEnd"
             android:textSize="10sp" />

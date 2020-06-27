@@ -27,6 +27,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import ru.geekbrains.android2.semenovweather.Constants;
 import ru.geekbrains.android2.semenovweather.R;
 import ru.geekbrains.android2.semenovweather.database.DatabaseHelper;
 import ru.geekbrains.android2.semenovweather.database.NotesTable;
@@ -71,6 +72,8 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
     private UpdateWeatherData updateWeatherData = new UpdateWeatherData(this, database);
 
     private RecyclerDataAdapterDays adapter;
+    private boolean isPressureActivated;
+    private boolean isWindActivated;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -95,7 +98,7 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
         //        searchEditText = findViewById(R.id.searchEditText);
 
         initFonts();
-        getSharedPrefs();
+        readSharedPrefs();
         updateWeatherData.updateByTown(townTextView.getText().toString());
         updateWeatherData.update5Days(townTextView.getText().toString());
         setOnChangeTownBtnClick();
@@ -256,10 +259,12 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
         editor.apply();
     }
 
-    private void getSharedPrefs() {
+    private void readSharedPrefs() {
         final SharedPreferences defaultPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         String text = defaultPrefs.getString(TOWN_TEXT_KEY, getString(R.string.region));
         townTextView.setText(text);
+        isPressureActivated = defaultPrefs.getBoolean(Constants.PRESSURE_CHECKBOX_KEY, true);
+        isWindActivated = defaultPrefs.getBoolean(Constants.WIND_CHECKBOX_KEY, true);
     }
 
     @Override
@@ -268,11 +273,15 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
         townTextView.setText(location);
         saveLocationToDataBaseIfNeeded (location);
 
-        int pressureInteger = (int) Math.round(model.main.pressure * FACTOR_HECTOPASCAL_TO_MM_RT_ST);
-        pressureTextView.setText(pressureInteger + " " + getString(R.string.pressure_units));
+        if (isPressureActivated) {
+            int pressureInteger = (int) Math.round(model.main.pressure * FACTOR_HECTOPASCAL_TO_MM_RT_ST);
+            pressureTextView.setText(pressureInteger + " " + getString(R.string.pressure_units));
+        }
 
-        int windInteger = (int) Math.round(model.wind.speed);
-        windTextView.setText(windInteger + " " + getString(R.string.wind_units));
+        if (isWindActivated) {
+            int windInteger = (int) Math.round(model.wind.speed);
+            windTextView.setText(windInteger + " " + getString(R.string.wind_units));
+        }
 
         int temperature = (int) Math.round(model.main.temp);
         temperatureTextView.setText(addSignToTemperature(temperature));
