@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -111,6 +112,7 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
 //        List<String> list = new ArrayList<>();
 //        List<Integer> listInt = new ArrayList<>(NotesTable.getAllNotes(database));
         List<String> list = new ArrayList<>(NotesTable.getAllNotes(database));
+        Collections.reverse(list);
         //        for (Integer i: listInt) {
 //            list.add(String.valueOf(i));
 //        }

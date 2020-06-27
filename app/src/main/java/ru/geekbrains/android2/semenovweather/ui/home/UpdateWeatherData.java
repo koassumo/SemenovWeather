@@ -1,5 +1,7 @@
 package ru.geekbrains.android2.semenovweather.ui.home;
 
+import android.database.sqlite.SQLiteDatabase;
+
 import androidx.annotation.NonNull;
 
 import retrofit2.Call;
@@ -11,9 +13,11 @@ import ru.geekbrains.android2.semenovweather.ui.home.dataForecast.ForecastLevel1
 
 public class UpdateWeatherData {
     HomeFragment homeFragment;
+    SQLiteDatabase database;
 
-    public UpdateWeatherData(HomeFragment homeFragment) {
+    public UpdateWeatherData(HomeFragment homeFragment, SQLiteDatabase database) {
         this.homeFragment = homeFragment;
+        this.database = database;
     }
 
     public void updateByTown(String town) {

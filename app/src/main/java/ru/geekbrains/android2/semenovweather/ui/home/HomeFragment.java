@@ -21,7 +21,6 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -37,6 +36,7 @@ import ru.geekbrains.android2.semenovweather.ui.home.dataForecast.ForecastLevel1
 public class HomeFragment extends Fragment implements ListenerNewWeatherData {
 
     public static final int MSK_TIME_THREE_OUR_PLUS = 10800000;
+    public static final int TWENTY_FOUR_HOURS_IN_MILLISECONDS = 86400000;
     SQLiteDatabase database;
 
     public static final int FORECAST_NUMBER_OF_TIME = 40;
@@ -68,7 +68,7 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
     private final Handler handler = new Handler();
     Typeface weatherFont;
 
-    private UpdateWeatherData updateWeatherData = new UpdateWeatherData(this);
+    private UpdateWeatherData updateWeatherData = new UpdateWeatherData(this, database);
 
     private RecyclerDataAdapterDays adapter;
 
@@ -238,6 +238,7 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
 
     private void setOnChangeTownBtnClick() {
         changeTownBtn.setOnClickListener(v -> {
+            //saveTownToHistoryIfNeeded
             saveSharedPrefs();
             Bundle bundle = new Bundle();
             bundle.putString("arg", "data");
@@ -251,7 +252,7 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
         SharedPreferences.Editor editor = defaultPrefs.edit();
         String text = townTextView.getText().toString();
         editor.putString(TOWN_TEXT_KEY, text);
-        NotesTable.addNote(text, database);
+        //NotesTable.addNote(text, database);
         editor.apply();
     }
 
@@ -263,7 +264,9 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
 
     @Override
     public void showCurrentWeatherData(WeatherRequestRestModel model) {
-        townTextView.setText(model.name + ", " + model.sys.country);
+        String location = model.name + ", " + model.sys.country;
+        townTextView.setText(location);
+        saveLocationToDataBaseIfNeeded (location);
 
         int pressureInteger = (int) Math.round(model.main.pressure * FACTOR_HECTOPASCAL_TO_MM_RT_ST);
         pressureTextView.setText(pressureInteger + " " + getString(R.string.pressure_units));
@@ -271,14 +274,10 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
         int windInteger = (int) Math.round(model.wind.speed);
         windTextView.setText(windInteger + " " + getString(R.string.wind_units));
 
-        int temperatureInteger = (int) Math.round(model.main.temp);
-        String temperature = Integer.toString(temperatureInteger);
-        if (temperatureInteger > 0) temperature = "+" + temperature;
-        else if (temperatureInteger < 0) temperature = "-" + temperature;
-        temperatureTextView.setText(temperature);
+        int temperature = (int) Math.round(model.main.temp);
+        temperatureTextView.setText(addSignToTemperature(temperature));
 
         // далее установка картинки погоды
-
         long sunrise = model.sys.sunrise * 1000;
         long sunset = model.sys.sunset * 1000;
         int idWeather = model.weather[0].id;
@@ -290,57 +289,54 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
         skyImageView.setImageResource(resID);
     }
 
-    public static String ConvertMilliSecondsToFormattedDate (long milliSeconds){
-        String dateFormat = "dd-MM-yyyy hh:mm";
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(milliSeconds);
-        return simpleDateFormat.format(calendar.getTime());
+    private void saveLocationToDataBaseIfNeeded(String location) {
+        List<String> listAllSavedLocations = new ArrayList<>(NotesTable.getAllNotes(database));
+        if (listAllSavedLocations.contains(location) == false) NotesTable.addNote(location, database);
     }
-
 
     @Override
     public void show5DaysForecastData(ForecastLevel1_RequestModel model) {
 
-        long forecastDateAndTime = model.list.get(0).dt * 1000;
-        lastUpdateTextView.setText(ConvertMilliSecondsToFormattedDate(forecastDateAndTime + MSK_TIME_THREE_OUR_PLUS));
+        long currentTime = new Date().getTime();
+        lastUpdateTextView.setText(convertMilliSecondsToFormattedDate(currentTime) + "  " + convertMilliSecondsToFormattedTime(currentTime));
+
         for (int i = 0; i < 40; i++) {
+            int forecastTemperatureInteger = (int) Math.round((model.list.get(i).main.temp));
+            String forecastTemperatureString = addSignToTemperature(forecastTemperatureInteger);
 
-            // формат nextDateAndTime = "2020-06-24 15:00"
-            String nextDateAndTime = model.list.get(i).dtTxt;
-
-            String greenwichDate = nextDateAndTime.substring(0, 10);
-            String moscowDate = greenwichDate;
-            String greenwichTime = nextDateAndTime.substring(11, 13);
-            int moscowTimeInteger = Integer.parseInt(greenwichTime) + 3;
-            if (moscowTimeInteger >= 24) {
-                moscowTimeInteger -= 24;
-                SimpleDateFormat gsonFormatter = new SimpleDateFormat("yyyy-MM-dd");//задаю формат даты
-                Date date = null;
-                try {
-                    date = gsonFormatter.parse(moscowDate);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                Calendar instance = Calendar.getInstance();
-                instance.setTime(date); //устанавливаем дату, с которой будет производить операции
-                instance.add(Calendar.DAY_OF_MONTH, 1);// прибавляем 3 дня к установленной дате
-                moscowDate = gsonFormatter.format(instance.getTime()); // получаем измененную дату
-            }
-            String moscowTime = moscowTimeInteger + ":00";
-
-            int nextTempInteger = (int) Math.round((model.list.get(i).main.temp));
-            String nextTemp = Integer.toString(nextTempInteger);
-            if (nextTempInteger > 0) nextTemp = "+" + nextTemp;
-            else if (nextTempInteger < 0) nextTemp = "-" + nextTemp;
-
-            long sunrise = model.city.sunrise * 1000;
-            long sunset = model.city.sunset * 1000;
+            long sunriseAfterMidNight = (model.city.sunrise * 1000) % TWENTY_FOUR_HOURS_IN_MILLISECONDS;
+            long sunsetAfterMidNight = (model.city.sunset * 1000) % TWENTY_FOUR_HOURS_IN_MILLISECONDS;
+            long forecastDateAndTime = (model.list.get(i).dt * 1000);
+            long forecastTimeAfterMidNight = forecastDateAndTime % TWENTY_FOUR_HOURS_IN_MILLISECONDS;
 
             int idWeather = model.list.get(i).weather.get(0).id;
-            String icon = defineSkyWeatherIcon(sunrise, sunset, idWeather);
+            String forecastIcon = defineSkyWeatherIcon(sunriseAfterMidNight, sunsetAfterMidNight, forecastTimeAfterMidNight, idWeather);
 
-            adapter.updateItem(moscowDate, moscowTime, icon, nextTemp, i);
+            String forecastDate = convertMilliSecondsToFormattedDate(forecastDateAndTime + MSK_TIME_THREE_OUR_PLUS);
+            String forecastTime = convertMilliSecondsToFormattedTime(forecastDateAndTime + MSK_TIME_THREE_OUR_PLUS);
+            adapter.updateItem(forecastDate, forecastTime, forecastIcon, forecastTemperatureString, i);
+
+            // формат nextDateAndTime = "2020-06-24 15:00"
+//            String nextDateAndTime = model.list.get(i).dtTxt;
+//            String greenwichDate = nextDateAndTime.substring(0, 10);
+//            String moscowDate = greenwichDate;
+//            String greenwichTime = nextDateAndTime.substring(11, 13);
+//            int moscowTimeInteger = Integer.parseInt(greenwichTime) + 3;
+//            if (moscowTimeInteger >= 24) {
+//                moscowTimeInteger -= 24;
+//                SimpleDateFormat gsonFormatter = new SimpleDateFormat("yyyy-MM-dd");//задаю формат даты
+//                Date date = null;
+//                try {
+//                    date = gsonFormatter.parse(moscowDate);
+//                } catch (ParseException e) {
+//                    e.printStackTrace();
+//                }
+//                Calendar instance = Calendar.getInstance();
+//                instance.setTime(date); //устанавливаем дату, с которой будет производить операции
+//                instance.add(Calendar.DAY_OF_MONTH, 1);// прибавляем 3 дня к установленной дате
+//                moscowDate = gsonFormatter.format(instance.getTime()); // получаем измененную дату
+//            }
+//            String moscowTime = moscowTimeInteger + ":00";
         }
     }
 
@@ -399,7 +395,6 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
                 }
                 if (idWeather == CLOUDS_CLEAR) {
                     long currentTime = new Date().getTime();
-                    //lastUpdateTextView.setText(currentTime/1000000 + "  " + sunrise/1000000 + "  "+ sunset/1000000);
                     if (currentTime >= sunrise && currentTime < sunset) {
                         skyPictureName = "z_clear_sky_white";
                     } else {
@@ -411,8 +406,7 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
         return skyPictureName;
     }
 
-
-    public String defineSkyWeatherIcon(long sunrise, long sunset, int idWeather) {
+    public String defineSkyWeatherIcon(long sunrise, long sunset, long forecastTime, int idWeather) {
         String icon = "";
 
         int idWeatherGroup = idWeather / 100;
@@ -456,8 +450,8 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
                     break;
                 }
                 if (idWeather == CLOUDS_FEW) {
-                    long currentTime = new Date().getTime(); // для дневного времени отображается солнце, для ночного - луна
-                    if (currentTime >= sunrise && currentTime < sunset) {
+                    // для дневного времени отображается солнце, для ночного - луна
+                    if (forecastTime >= sunrise && forecastTime < sunset) {
                         icon = getString(R.string.weather_sunny);
                     } else {
                         icon = getString(R.string.weather_clear_night);
@@ -465,8 +459,7 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
                     break;
                 }
                 if (idWeather == CLOUDS_CLEAR) {
-                    long currentTime = new Date().getTime();
-                    if (currentTime >= sunrise && currentTime < sunset) {
+                    if (forecastTime >= sunrise && forecastTime < sunset) {
                         icon = getString(R.string.weather_sunny);
                     } else {
                         icon = getString(R.string.weather_clear_night);
@@ -475,5 +468,28 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
             }
         }
         return icon;
+    }
+
+    public static String addSignToTemperature (int temperature) {
+        String textTemperature = Integer.toString(temperature);
+        if (temperature > 0) textTemperature = "+" + temperature;
+        else if (temperature < 0) textTemperature = "-" + temperature;
+        return textTemperature;
+    }
+
+    public static String convertMilliSecondsToFormattedDate(long milliSeconds){
+        String dateFormat = "dd-MM-yyyy";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(milliSeconds);
+        return simpleDateFormat.format(calendar.getTime());
+    }
+
+    public static String convertMilliSecondsToFormattedTime(long milliSeconds){
+        String dateFormat = "HH:mm";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(milliSeconds);
+        return simpleDateFormat.format(calendar.getTime());
     }
 }
