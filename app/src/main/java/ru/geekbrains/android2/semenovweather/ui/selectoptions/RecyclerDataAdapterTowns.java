@@ -19,11 +19,8 @@ import ru.geekbrains.android2.semenovweather.database.DatabaseHelper;
 import ru.geekbrains.android2.semenovweather.database.NotesTable;
 
 public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataAdapterTowns.ViewHolder> {
-    //private final SQLiteDatabase database;
 
     SQLiteDatabase database;
-
-//    private List<Integer> elements;
     private List<String> historyList;
     private OnItemClickListener itemClickListener;  // Слушатель будет устанавливаться извне
     private Context context;
@@ -35,7 +32,6 @@ public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataA
         this.historyList = historyList;
         this.fragment = fragment;
         this.database = database;
-//        elements = NotesTable.getAllNotes(database);
     }
 
     @NonNull
@@ -49,9 +45,6 @@ public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataA
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
-//        setText(holder, position);
-//        setOnItemClickBehavior(holder, position);
-//        highlightSelectedPosition(holder, position);
 
         // Заполнение элементов холдера
         TextView textElement = holder.getTextElement();
@@ -80,8 +73,6 @@ public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataA
 
     public void addItem(String element){
         historyList.add(element);
-//        NotesTable.addNote(elements.size(), database);
-
         notifyItemInserted(historyList.size()-1);
     }
 
@@ -91,11 +82,6 @@ public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataA
 
     public List<String> readList (){
         return historyList;
-    }
-
-    public void updateItem(String element, int position){
-        historyList.set(position, element);
-        notifyItemChanged(position);
     }
 
 //    public void removeItem(int position){
@@ -109,12 +95,10 @@ public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataA
         NotesTable.deleteAll(database);
         notifyDataSetChanged();
     }
-    // endregion
 
     public int getMenuPosition() {
         return menuPosition;
     }
-
 
     // Интерфейс для обработки нажатий как в ListView
     public interface OnItemClickListener {
@@ -144,54 +128,4 @@ public class RecyclerDataAdapterTowns extends RecyclerView.Adapter<RecyclerDataA
             return textElement;
         }
     }
-
-
-
-//    private void setText(@NonNull ViewHolder holder, final int position) {
-//        holder.listItemTextView.setText(data[position]);
-//    }
-
-    private void setOnItemClickBehavior(@NonNull ViewHolder holder, final int position) {
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectedPosition = position;
-                addItem("ttttttt");
-                notifyDataSetChanged();
-            }
-        });
-    }
-
-    private void highlightSelectedPosition(@NonNull ViewHolder holder, final int position) {
-        if(position == selectedPosition) {
-            int color = ContextCompat.getColor(context, R.color.colorPrimaryDark);
-            holder.itemView.setBackgroundColor(color);
-        }
-        else {
-            int color = ContextCompat.getColor(context, android.R.color.transparent);
-            holder.itemView.setBackgroundColor(color);
-        }
-    }
-
-
-//
-//    @Override
-//    public int getItemCount() {
-//        return data == null ? 0 : data.length;
-//    }
-//
-//    class ViewHolder extends RecyclerView.ViewHolder {
-//        TextView listItemTextView;
-//        View itemView;
-//        ViewHolder(@NonNull View itemView) {
-//            super(itemView);
-//            this.itemView = itemView;
-//            initViews(itemView);
-//        }
-//
-//        private void initViews(View itemView) {
-//            listItemTextView = itemView.findViewById(R.id.textStudentFirstName);
-//        }
-//    }
-
 }

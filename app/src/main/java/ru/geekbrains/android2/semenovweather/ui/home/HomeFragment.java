@@ -87,12 +87,10 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
     private RecyclerDataAdapterDays adapter;
     private boolean isPressureActivated;
     private boolean isWindActivated;
-    private Handler textAddress;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-        //requestPermissions();
         initDB();
         initList(root);
         return root;
@@ -111,7 +109,6 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
         changeTownBtn = view.findViewById(R.id.changeTownBtn);
         myLocation = view.findViewById(R.id.myLocation);
         textForecastSky = view.findViewById(R.id.textForecastSky);
-        //        searchEditText = findViewById(R.id.searchEditText);
 
         initFonts();
         readSharedPrefs();
@@ -121,130 +118,8 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
         setOnMyLocationBtnClick();
     }
 
-    private void requestPermissions() {
-        // Проверим, есть ли Permission’ы, и если их нет, запрашиваем их у
-        // пользователя
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                || ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            // Запрашиваем координаты
-            requestLocation();
-        } else {
-            // Permission’ов нет, запрашиваем их у пользователя
-            requestLocationPermissions();
-        }
-    }
-
-    private void requestLocation() {
-        // Если Permission’а всё- таки нет, просто выходим: приложение не имеет
-        // смысла
-
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-            return;
-        // Получаем менеджер геолокаций
-
-        LocationManager locationManager = (LocationManager)getContext().getSystemService(Context.LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_COARSE);
-
-        // Получаем наиболее подходящий провайдер геолокации по критериям.
-        // Но определить, какой провайдер использовать, можно и самостоятельно.
-        // В основном используются LocationManager.GPS_PROVIDER или
-        // LocationManager.NETWORK_PROVIDER, но можно использовать и
-        // LocationManager.PASSIVE_PROVIDER - для получения координат в
-        // пассивном режиме
-        String provider = locationManager.getBestProvider(criteria, true);
-        if (provider != null) {
-            // Будем получать геоположение через каждые 10 секунд или каждые
-            // 10 метров
-            locationManager.requestLocationUpdates(provider, 10000, 10, new LocationListener() {
-                @Override
-                public void onLocationChanged(Location location) {
-                    double lat = location.getLatitude(); // Широта
-                    String latitude = Double.toString(lat);
-                    townTextView.setText(latitude);
-
-                    double lng = location.getLongitude(); // Долгота
-                    String longitude = Double.toString(lng);
-                    //textLongitude.setText(longitude);
-
-                    String accuracy = Float.toString(location.getAccuracy());   // Точность
-
-                    LatLng currentPosition = new LatLng(lat, lng);
-                    getAddress(currentPosition);
-//                    currentMarker.setPosition(currentPosition);
-//                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, (float)12));
-                }
-
-                @Override
-                public void onStatusChanged(String provider, int status, Bundle extras) {
-                }
-
-                @Override
-                public void onProviderEnabled(String provider) {
-                }
-
-                @Override
-                public void onProviderDisabled(String provider) {
-                }
-            });
-        }
-    }
-
-    // Получаем адрес по координатам
-    private void getAddress(final LatLng location){
-        final Geocoder geocoder = new Geocoder(getContext());
-        // Поскольку Geocoder работает по интернету, создаём отдельный поток
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    final List<Address> addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1);
-                    townTextView.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            townTextView.setText(addresses.get(0).getAddressLine(0));
-                        }
-                    });
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
-
-    // Запрашиваем Permission’ы для геолокации
-    private void requestLocationPermissions() {
-        if (!ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.CALL_PHONE)) {
-            // Запрашиваем эти два Permission’а у пользователя
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{
-                            Manifest.permission.ACCESS_COARSE_LOCATION,
-                            Manifest.permission.ACCESS_FINE_LOCATION
-                    },
-                    PERMISSION_REQUEST_CODE);
-        }
-    }
-
-    // Результат запроса Permission’а у пользователя:
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == PERMISSION_REQUEST_CODE) {   // Запрошенный нами
-            // Permission
-            if (grantResults.length == 2 &&
-                    (grantResults[0] == PackageManager.PERMISSION_GRANTED || grantResults[1] == PackageManager.PERMISSION_GRANTED)) {
-                // Все препоны пройдены и пермиссия дана
-                // Запросим координаты
-                requestLocation();
-            }
-        }
-    }
-
     private void initDB() {
         database = new DatabaseHelper(getContext()).getWritableDatabase();
-        // NotesTable.deleteAll(database);
-//        NotesTable.addNote("dsf", database);
     }
 
     private void initList(View root) {
@@ -271,105 +146,6 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
         adapter = new RecyclerDataAdapterDays(listDate, listTime, listSky, listTemp, this);
         recyclerView.setAdapter(adapter);
     }
-
-//    @Override
-//    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-//        super.onCreateContextMenu(menu, v, menuInfo);
-//        MenuInflater inflater = requireActivity().getMenuInflater();
-//        inflater.inflate(R.menu.context_menu, menu);
-//    }
-
-//    @Override
-//    public boolean onContextItemSelected(@NonNull MenuItem item) {
-//        ContextMenu.ContextMenuInfo menuInfo = item.getMenuInfo();
-//        handleMenuItemClick(item);
-//        int id = item.getItemId();
-//        switch (id) {
-//            case R.id.add_context:
-//                adapter.addItem(String.format("New element %d", adapter.getItemCount()));
-//                return true;
-//            case R.id.update_context:
-//                adapter.updateItem(String.format("Updated element %d", adapter.getMenuPosition()), adapter.getMenuPosition());
-//                return true;
-//            case R.id.remove_context:
-//                adapter.removeItem(adapter.getMenuPosition());
-//                return true;
-//            case R.id.clear_context:
-//                adapter.clearItems();
-//                return true;
-//        }
-//        return super.onContextItemSelected(item);
-//    }
-
-//    @Override
-//    public void addItem(String str) {
-//        adapter.addItem(str);
-//    }
-//
-//    @Override
-//    public void clearItems() {
-//        adapter.clearItems();
-//    }
-
-//    private void handleMenuItemClick(MenuItem item) {
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        switch (id) {
-//            case R.id.add_context: {
-//                //menuListAdapter.addItem();
-//                break;
-//            }
-////            case R.id.menu_search: {
-////                if(searchEditText.getVisibility() == View.VISIBLE) {
-////                    searchEditText.setVisibility(View.GONE);
-////                    Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.app_name));
-////                } else {
-////                    Objects.requireNonNull(getSupportActionBar()).setTitle("");
-////                    searchEditText.setVisibility(View.VISIBLE);
-////                    searchEditText.addTextChangedListener(new TextWatcher() {
-////                        @Override
-////                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-////                        }
-////
-////                        @Override
-////                        public void onTextChanged(CharSequence s, int start, int before, int count) {
-////                        }
-////
-////                        @Override
-////                        public void afterTextChanged(Editable s) {
-////                            //Вам приходит на вход текст поиска - ищем его - в бд, через АПИ (сервер в инете) и т.д.
-////                            Toast.makeText(getApplicationContext(), s.toString(), Toast.LENGTH_SHORT).show();
-////                        }
-////                    });
-////                }
-////            }
-//            case R.id.update_context: {
-//                //menuListAdapter.editItem(2500);
-//                break;
-//            }
-//            case R.id.remove_context: {
-//                //menuListAdapter.removeElement();
-//                break;
-//            }
-//            case R.id.clear_context: {
-//                //menuListAdapter.clearList();
-//                break;
-//            }
-//            case 12345: {
-//                Toast.makeText(getContext(), "Был нажат доп. элемент попап меню",
-//                        Toast.LENGTH_SHORT).show();
-//            }
-////            default: {
-////                if(id != R.id.menu_more) {
-////                    Toast.makeText(getContext(), getString(R.string.action_not_found),
-////                            Toast.LENGTH_SHORT).show();
-////                }
-////            }
-//
-//            //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        }
-//    }
 
     private void initFonts() {
         weatherFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/weather.ttf"); //если в MainActivity, то getActivity(). не нужен
@@ -467,28 +243,6 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
             String forecastDate = convertMilliSecondsToFormattedDate(forecastDateAndTime + MSK_TIME_THREE_OUR_PLUS);
             String forecastTime = convertMilliSecondsToFormattedTime(forecastDateAndTime + MSK_TIME_THREE_OUR_PLUS);
             adapter.updateItem(forecastDate, forecastTime, forecastIcon, forecastTemperatureString, i);
-
-            // формат nextDateAndTime = "2020-06-24 15:00"
-//            String nextDateAndTime = model.list.get(i).dtTxt;
-//            String greenwichDate = nextDateAndTime.substring(0, 10);
-//            String moscowDate = greenwichDate;
-//            String greenwichTime = nextDateAndTime.substring(11, 13);
-//            int moscowTimeInteger = Integer.parseInt(greenwichTime) + 3;
-//            if (moscowTimeInteger >= 24) {
-//                moscowTimeInteger -= 24;
-//                SimpleDateFormat gsonFormatter = new SimpleDateFormat("yyyy-MM-dd");//задаю формат даты
-//                Date date = null;
-//                try {
-//                    date = gsonFormatter.parse(moscowDate);
-//                } catch (ParseException e) {
-//                    e.printStackTrace();
-//                }
-//                Calendar instance = Calendar.getInstance();
-//                instance.setTime(date); //устанавливаем дату, с которой будет производить операции
-//                instance.add(Calendar.DAY_OF_MONTH, 1);// прибавляем 3 дня к установленной дате
-//                moscowDate = gsonFormatter.format(instance.getTime()); // получаем измененную дату
-//            }
-//            String moscowTime = moscowTimeInteger + ":00";
         }
     }
 
@@ -643,5 +397,124 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(milliSeconds);
         return simpleDateFormat.format(calendar.getTime());
+    }
+
+    private void requestPermissions() {
+        // Проверим, есть ли Permission’ы, и если их нет, запрашиваем их у
+        // пользователя
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // Запрашиваем координаты
+            requestLocation();
+        } else {
+            // Permission’ов нет, запрашиваем их у пользователя
+            requestLocationPermissions();
+        }
+    }
+
+    private void requestLocation() {
+        // Если Permission’а всё- таки нет, просто выходим: приложение не имеет
+        // смысла
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            return;
+        // Получаем менеджер геолокаций
+
+        LocationManager locationManager = (LocationManager)getContext().getSystemService(Context.LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_COARSE);
+
+        // Получаем наиболее подходящий провайдер геолокации по критериям.
+        // Но определить, какой провайдер использовать, можно и самостоятельно.
+        // В основном используются LocationManager.GPS_PROVIDER или
+        // LocationManager.NETWORK_PROVIDER, но можно использовать и
+        // LocationManager.PASSIVE_PROVIDER - для получения координат в
+        // пассивном режиме
+        String provider = locationManager.getBestProvider(criteria, true);
+        if (provider != null) {
+            // Будем получать геоположение через каждые 10 секунд или каждые
+            // 10 метров
+            locationManager.requestLocationUpdates(provider, 10000, 10, new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    double lat = location.getLatitude(); // Широта
+                    String latitude = Double.toString(lat);
+                    townTextView.setText(latitude);
+
+                    double lng = location.getLongitude(); // Долгота
+                    String longitude = Double.toString(lng);
+                    //textLongitude.setText(longitude);
+
+                    String accuracy = Float.toString(location.getAccuracy());   // Точность
+
+                    LatLng currentPosition = new LatLng(lat, lng);
+                    getAddress(currentPosition);
+//                    currentMarker.setPosition(currentPosition);
+//                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, (float)12));
+                }
+
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+                }
+
+                @Override
+                public void onProviderEnabled(String provider) {
+                }
+
+                @Override
+                public void onProviderDisabled(String provider) {
+                }
+            });
+        }
+    }
+
+    // Получаем адрес по координатам
+    private void getAddress(final LatLng location){
+        final Geocoder geocoder = new Geocoder(getContext());
+        // Поскольку Geocoder работает по интернету, создаём отдельный поток
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final List<Address> addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1);
+                    townTextView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            townTextView.setText(addresses.get(0).getAddressLine(0));
+                        }
+                    });
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    // Запрашиваем Permission’ы для геолокации
+    private void requestLocationPermissions() {
+        if (!ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.CALL_PHONE)) {
+            // Запрашиваем эти два Permission’а у пользователя
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                    },
+                    PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    // Результат запроса Permission’а у пользователя:
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == PERMISSION_REQUEST_CODE) {   // Запрошенный нами
+            // Permission
+            if (grantResults.length == 2 &&
+                    (grantResults[0] == PackageManager.PERMISSION_GRANTED || grantResults[1] == PackageManager.PERMISSION_GRANTED)) {
+                // Все препоны пройдены и пермиссия дана
+                // Запросим координаты
+                requestLocation();
+            }
+        }
     }
 }

@@ -136,15 +136,9 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
         handleMenuItemClick(item);
         int id = item.getItemId();
         switch (id) {
-            case R.id.add_context:
-                adapter.addItem(String.format("New element %d", adapter.getItemCount()));
+            case R.id.remove_context:
+                //adapter.removeItem(adapter.getMenuPosition());
                 return true;
-            case R.id.update_context:
-                adapter.updateItem(String.format("Updated element %d", adapter.getMenuPosition()), adapter.getMenuPosition());
-                return true;
-//            case R.id.remove_context:
-//                adapter.removeItem(adapter.getMenuPosition());
-//                return true;
             case R.id.clear_context:
                 adapter.clearItems();
                 return true;
@@ -167,38 +161,6 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
 
         //noinspection SimplifiableIfStatement
         switch (id) {
-            case R.id.add_context: {
-                //menuListAdapter.addItem();
-                break;
-            }
-//            case R.id.menu_search: {
-//                if(searchEditText.getVisibility() == View.VISIBLE) {
-//                    searchEditText.setVisibility(View.GONE);
-//                    Objects.requireNonNull(getSupportActionBar()).setTitle(getString(R.string.app_name));
-//                } else {
-//                    Objects.requireNonNull(getSupportActionBar()).setTitle("");
-//                    searchEditText.setVisibility(View.VISIBLE);
-//                    searchEditText.addTextChangedListener(new TextWatcher() {
-//                        @Override
-//                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//                        }
-//
-//                        @Override
-//                        public void onTextChanged(CharSequence s, int start, int before, int count) {
-//                        }
-//
-//                        @Override
-//                        public void afterTextChanged(Editable s) {
-//                            //Вам приходит на вход текст поиска - ищем его - в бд, через АПИ (сервер в инете) и т.д.
-//                            Toast.makeText(getApplicationContext(), s.toString(), Toast.LENGTH_SHORT).show();
-//                        }
-//                    });
-//                }
-//            }
-            case R.id.update_context: {
-                //menuListAdapter.editItem(2500);
-                break;
-            }
             case R.id.remove_context: {
                 //menuListAdapter.removeElement();
                 break;
@@ -207,18 +169,6 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
                 //menuListAdapter.clearList();
                 break;
             }
-            case 12345: {
-                Toast.makeText(getContext(), "Был нажат доп. элемент попап меню",
-                        Toast.LENGTH_SHORT).show();
-            }
-//            default: {
-//                if(id != R.id.menu_more) {
-//                    Toast.makeText(getContext(), getString(R.string.action_not_found),
-//                            Toast.LENGTH_SHORT).show();
-//                }
-//            }
-
-            //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
 
@@ -325,11 +275,6 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
         editor.putBoolean(Constants.PRESSURE_CHECKBOX_KEY, isPressureCheckBoxChecked);
         Boolean isWindCheckBoxChecked = windCheckBox.isChecked();
         editor.putBoolean(Constants.WIND_CHECKBOX_KEY, isWindCheckBoxChecked);
-        // сохранение сета (аррей не берет)
-//        Set <String> historyList;
-//        historyList = new HashSet<>(adapter.readList());
-//        historyList.add(textNewTown);
-//        editor.putStringSet(HISTORY_LIST, historyList);
         editor.apply();
     }
 
@@ -342,13 +287,4 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
         boolean isWindActivated = defaultPrefs.getBoolean(Constants.WIND_CHECKBOX_KEY, true);
         windCheckBox.setChecked(isWindActivated);
     }
-
-//    private HashSet<String> readSharedPrefsList() {
-//        final SharedPreferences defaultPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-//        //Boolean isSetExist = defaultPrefs.getBoolean("is_set_exist", false);
-//        Set<String> defHistoryList = new HashSet<>();
-//        defHistoryList.add("");
-//        Set<String> historyList = defaultPrefs.getStringSet(HISTORY_LIST, defHistoryList);
-//        return (HashSet<String>) historyList;
-//    }
 }

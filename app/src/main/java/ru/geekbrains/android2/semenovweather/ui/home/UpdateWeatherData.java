@@ -43,8 +43,6 @@ public class UpdateWeatherData {
 
                     @Override                    //сбой при интернет подключении
                     public void onFailure(Call<WeatherRequestRestModel> call, Throwable t) {
-//                        Toast.makeText(getBaseContext(), getString(R.string.network_error),
-//                                Toast.LENGTH_SHORT).show();
                     }
                 });
     }

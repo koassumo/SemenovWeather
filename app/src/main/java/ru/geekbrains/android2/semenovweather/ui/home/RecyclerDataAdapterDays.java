@@ -20,17 +20,12 @@ public class RecyclerDataAdapterDays extends RecyclerView.Adapter<RecyclerDataAd
     private List<String> dataTime;
     private List<String> dataSky;
     private List<String> dataTemp;
-    private Fragment fragment;
-    private int menuPosition;
-    private int selectedPosition = 0;
-    Typeface weatherFont;
 
     public RecyclerDataAdapterDays(List<String> dataDate, List<String> dataTime, List<String> dataSky, List<String> dataTemp, Fragment fragment) {
         this.dataDate = dataDate;
         this.dataTime = dataTime;
         this.dataSky = dataSky;
         this.dataTemp = dataTemp;
-        this.fragment = fragment;
     }
 
     @NonNull
@@ -43,10 +38,6 @@ public class RecyclerDataAdapterDays extends RecyclerView.Adapter<RecyclerDataAd
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
-//        setText(holder, position);
-//        setOnItemClickBehavior(holder, position);
-//        highlightSelectedPosition(holder, position);
-
         // Заполнение элементов холдера
         TextView textElement = holder.getTextElement();
         textElement.setText(dataDate.get(position));
