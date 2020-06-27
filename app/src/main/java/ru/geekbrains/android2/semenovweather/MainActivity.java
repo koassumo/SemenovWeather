@@ -2,6 +2,7 @@ package ru.geekbrains.android2.semenovweather;
 
 import android.content.BroadcastReceiver;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -20,6 +21,8 @@ import com.google.android.material.navigation.NavigationView;
 import ru.geekbrains.android2.semenovweather.database.DatabaseHelper;
 import ru.geekbrains.android2.semenovweather.ui.home.IFragmentList;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
@@ -34,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
         initToolbar();
 //        initDB();
         initDrawer();
-
 //        registerReceiver(batteryReceiver, new IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED));
     }
 
