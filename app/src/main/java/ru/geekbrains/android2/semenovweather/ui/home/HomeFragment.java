@@ -7,7 +7,9 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
+import android.location.Address;
 import android.location.Criteria;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -29,6 +31,9 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.maps.model.LatLng;
+
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -42,15 +47,12 @@ import ru.geekbrains.android2.semenovweather.database.NotesTable;
 import ru.geekbrains.android2.semenovweather.ui.home.dataCurrentWeather.WeatherRequestRestModel;
 import ru.geekbrains.android2.semenovweather.ui.home.dataForecast.ForecastLevel1_RequestModel;
 
-import static androidx.core.content.ContextCompat.getSystemService;
-
 public class HomeFragment extends Fragment implements ListenerNewWeatherData {
     private static final int PERMISSION_REQUEST_CODE = 10;
-    //private Marker currentMarker;
+    SQLiteDatabase database;
 
     public static final int MSK_TIME_THREE_OUR_PLUS = 10800000;
     public static final int TWENTY_FOUR_HOURS_IN_MILLISECONDS = 86400000;
-    SQLiteDatabase database;
 
     public static final int FORECAST_NUMBER_OF_TIME = 40;
     final double FACTOR_HECTOPASCAL_TO_MM_RT_ST = 0.750063755419211;
@@ -74,9 +76,8 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
     private TextView lastUpdateTextView;
     private ImageView skyImageView;
     private View changeTownBtn;
+    private View myLocation;
     private TextView textForecastSky;
-
-    private final String TOWN_TEXT_KEY = "town_text_key";
 
     private final Handler handler = new Handler();
     Typeface weatherFont;
@@ -86,17 +87,41 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
     private RecyclerDataAdapterDays adapter;
     private boolean isPressureActivated;
     private boolean isWindActivated;
+    private Handler textAddress;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-        requestPemissions();
+        //requestPermissions();
         initDB();
         initList(root);
         return root;
     }
 
-    private void requestPemissions() {
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        townTextView = view.findViewById(R.id.townTextView);
+        temperatureTextView = view.findViewById(R.id.temperatureTextView);
+        pressureTextView = view.findViewById(R.id.pressureTextView);
+        windTextView = view.findViewById(R.id.windTextView);
+        skyTextView = view.findViewById(R.id.lastUpdateTextView);
+        lastUpdateTextView = view.findViewById(R.id.lastUpdateTextView);
+        skyImageView = view.findViewById(R.id.skyImageView);
+        changeTownBtn = view.findViewById(R.id.changeTownBtn);
+        myLocation = view.findViewById(R.id.myLocation);
+        textForecastSky = view.findViewById(R.id.textForecastSky);
+        //        searchEditText = findViewById(R.id.searchEditText);
+
+        initFonts();
+        readSharedPrefs();
+        updateWeatherData.updateByTown(townTextView.getText().toString());
+        updateWeatherData.update5Days(townTextView.getText().toString());
+        setOnChangeTownBtnClick();
+        setOnMyLocationBtnClick();
+    }
+
+    private void requestPermissions() {
         // Проверим, есть ли Permission’ы, и если их нет, запрашиваем их у
         // пользователя
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
@@ -107,12 +132,12 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
             // Permission’ов нет, запрашиваем их у пользователя
             requestLocationPermissions();
         }
-
     }
 
     private void requestLocation() {
         // Если Permission’а всё- таки нет, просто выходим: приложение не имеет
         // смысла
+
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             return;
@@ -137,7 +162,7 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
                 public void onLocationChanged(Location location) {
                     double lat = location.getLatitude(); // Широта
                     String latitude = Double.toString(lat);
-                    //textLatitude.setText(latitude);
+                    townTextView.setText(latitude);
 
                     double lng = location.getLongitude(); // Долгота
                     String longitude = Double.toString(lng);
@@ -145,7 +170,8 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
 
                     String accuracy = Float.toString(location.getAccuracy());   // Точность
 
-//                    LatLng currentPosition = new LatLng(lat, lng);
+                    LatLng currentPosition = new LatLng(lat, lng);
+                    getAddress(currentPosition);
 //                    currentMarker.setPosition(currentPosition);
 //                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, (float)12));
                 }
@@ -165,6 +191,30 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
         }
     }
 
+    // Получаем адрес по координатам
+    private void getAddress(final LatLng location){
+        final Geocoder geocoder = new Geocoder(getContext());
+        // Поскольку Geocoder работает по интернету, создаём отдельный поток
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final List<Address> addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1);
+                    townTextView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            townTextView.setText(addresses.get(0).getAddressLine(0));
+                        }
+                    });
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+
     // Запрашиваем Permission’ы для геолокации
     private void requestLocationPermissions() {
         if (!ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.CALL_PHONE)) {
@@ -178,7 +228,6 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
         }
     }
 
-
     // Результат запроса Permission’а у пользователя:
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -191,29 +240,6 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
                 requestLocation();
             }
         }
-    }
-
-
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        townTextView = view.findViewById(R.id.townTextView);
-        temperatureTextView = view.findViewById(R.id.temperatureTextView);
-        pressureTextView = view.findViewById(R.id.pressureTextView);
-        windTextView = view.findViewById(R.id.windTextView);
-        skyTextView = view.findViewById(R.id.lastUpdateTextView);
-        lastUpdateTextView = view.findViewById(R.id.lastUpdateTextView);
-        skyImageView = view.findViewById(R.id.skyImageView);
-        changeTownBtn = view.findViewById(R.id.changeTownBtn);
-        textForecastSky = view.findViewById(R.id.textForecastSky);
-        //        searchEditText = findViewById(R.id.searchEditText);
-
-        initFonts();
-        readSharedPrefs();
-        updateWeatherData.updateByTown(townTextView.getText().toString());
-        updateWeatherData.update5Days(townTextView.getText().toString());
-        setOnChangeTownBtnClick();
     }
 
     private void initDB() {
@@ -362,11 +388,17 @@ public class HomeFragment extends Fragment implements ListenerNewWeatherData {
         });
     }
 
+    private void setOnMyLocationBtnClick() {
+        myLocation.setOnClickListener(v -> {
+            requestPermissions();
+        });
+    }
+
     private void saveSharedPrefs() {
         final SharedPreferences defaultPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         SharedPreferences.Editor editor = defaultPrefs.edit();
         String text = townTextView.getText().toString();
-        editor.putString(TOWN_TEXT_KEY, text);
+        editor.putString(Constants.TOWN_TEXT_KEY, text);
         //NotesTable.addNote(text, database);
         editor.apply();
     }

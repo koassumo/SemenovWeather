@@ -63,5 +63,6 @@
     <string name="title_activity_maps">Map</string>
     <string name="latitude">Широта</string>
     <string name="longitude">Долгота</string>
+    <string name="btn_title_me">я</string>
 
 </resources>

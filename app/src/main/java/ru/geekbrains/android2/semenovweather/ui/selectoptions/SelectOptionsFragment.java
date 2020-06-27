@@ -43,8 +43,7 @@ import ru.geekbrains.android2.semenovweather.database.DatabaseHelper;
 import ru.geekbrains.android2.semenovweather.database.NotesTable;
 
 public class SelectOptionsFragment extends Fragment implements IFragmentList {
-    private final String TOWN_TEXT_KEY = "town_text_key";
-    private final String HISTORY_LIST = "history_list";
+//    private final String HISTORY_LIST = "history_list";
     TextView townEditText;
     Button goHomeFragmentBtn;
     Button goHelpFragmentBtn;
@@ -74,7 +73,6 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
 //        NotesTable.deleteAll(database);
 //        NotesTable.addNote("dsf", database);
     }
-
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -322,7 +320,7 @@ public class SelectOptionsFragment extends Fragment implements IFragmentList {
         final SharedPreferences defaultPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         SharedPreferences.Editor editor = defaultPrefs.edit();
         String textNewTown = townEditText.getText().toString();
-        editor.putString(TOWN_TEXT_KEY, textNewTown);
+        editor.putString(Constants.TOWN_TEXT_KEY, textNewTown);
         Boolean isPressureCheckBoxChecked = pressureCheckBox.isChecked();
         editor.putBoolean(Constants.PRESSURE_CHECKBOX_KEY, isPressureCheckBoxChecked);
         Boolean isWindCheckBoxChecked = windCheckBox.isChecked();
