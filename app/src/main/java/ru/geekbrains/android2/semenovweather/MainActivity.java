@@ -1,28 +1,22 @@
 package ru.geekbrains.android2.semenovweather;
 
 import android.content.BroadcastReceiver;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.widget.EditText;
 import android.widget.Toast;
-
-import com.google.android.material.navigation.NavigationView;
-
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
-    private BroadcastReceiver batteryReceiver = new BatteryReceiver();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,11 +24,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initToolbar();
         initDrawer();
-
-//        registerReceiver(batteryReceiver, new IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED));
     }
-
-
 
     private void initToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -53,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-
     }
 
     @Override
@@ -81,7 +70,5 @@ public class MainActivity extends AppCompatActivity {
             Log.e("TAG", "NullPointer in MainActivity! First launch?");
         }
     }
-
-
 
 }

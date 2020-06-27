@@ -15,7 +15,6 @@ public class OpenWeatherRepo {
         if(singleton == null) {
             singleton = new OpenWeatherRepo();
         }
-
         return singleton;
     }
 
@@ -28,7 +27,6 @@ public class OpenWeatherRepo {
                 .baseUrl("https://api.openweathermap.org/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-
         return adapter.create(IOpenWeather.class);
     }
 }

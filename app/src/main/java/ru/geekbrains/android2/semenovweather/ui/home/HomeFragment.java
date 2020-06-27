@@ -1,34 +1,72 @@
 package ru.geekbrains.android2.semenovweather.ui.home;
 
-import android.content.DialogInterface;
+import android.Manifest;
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
+import android.location.Address;
+import android.location.Criteria;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.maps.model.LatLng;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import ru.geekbrains.android2.semenovweather.Constants;
 import ru.geekbrains.android2.semenovweather.R;
-import ru.geekbrains.android2.semenovweather.ui.home.data.WeatherRequestRestModel;
+import ru.geekbrains.android2.semenovweather.database.DatabaseHelper;
+import ru.geekbrains.android2.semenovweather.database.NotesTable;
+import ru.geekbrains.android2.semenovweather.ui.home.dataCurrentWeather.WeatherRequestRestModel;
+import ru.geekbrains.android2.semenovweather.ui.home.dataForecast.ForecastLevel1_RequestModel;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements ListenerNewWeatherData {
+    private static final int PERMISSION_REQUEST_CODE = 10;
+    SQLiteDatabase database;
+
+    public static final int MSK_TIME_THREE_OUR_PLUS = 10800000;
+    public static final int TWENTY_FOUR_HOURS_IN_MILLISECONDS = 86400000;
+
+    public static final int FORECAST_NUMBER_OF_TIME = 40;
+    final double FACTOR_HECTOPASCAL_TO_MM_RT_ST = 0.750063755419211;
+    final int GROUP_THUNDERSTORM = 2;
+    final int GROUP_DRIZZLE = 3;
+    final int DRIZZLE_LIGHT = 301;
+    final int GROUP_RAIN = 5;
+    final int RAIN_LIGHT = 501;
+    final int GROUP_SNOW = 6;
+    final int GROUP_FOG = 7;
+    final int GROUP_CLOUDS = 8;
+    final int CLOUDS_CLEAR = 800;
+    final int CLOUDS_FEW = 801;
+    final int CLOUDS_BROKEN = 802;
 
     private TextView townTextView;
     private TextView temperatureTextView;
@@ -38,15 +76,23 @@ public class HomeFragment extends Fragment {
     private TextView lastUpdateTextView;
     private ImageView skyImageView;
     private View changeTownBtn;
-
-    private final String townTextKey = "town_text_key";
+    private View myLocation;
+    private TextView textForecastSky;
 
     private final Handler handler = new Handler();
     Typeface weatherFont;
 
+    private UpdateWeatherData updateWeatherData = new UpdateWeatherData(this, database);
+
+    private RecyclerDataAdapterDays adapter;
+    private boolean isPressureActivated;
+    private boolean isWindActivated;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
+        initDB();
+        initList(root);
         return root;
     }
 
@@ -60,148 +106,149 @@ public class HomeFragment extends Fragment {
         skyTextView = view.findViewById(R.id.lastUpdateTextView);
         lastUpdateTextView = view.findViewById(R.id.lastUpdateTextView);
         skyImageView = view.findViewById(R.id.skyImageView);
-
         changeTownBtn = view.findViewById(R.id.changeTownBtn);
+        myLocation = view.findViewById(R.id.myLocation);
+        textForecastSky = view.findViewById(R.id.textForecastSky);
 
         initFonts();
-        getSharedPrefs();
-
-        updateWeatherData(townTextView.getText().toString());
+        readSharedPrefs();
+        updateWeatherData.updateByTown(townTextView.getText().toString());
+        updateWeatherData.update5Days(townTextView.getText().toString());
         setOnChangeTownBtnClick();
+        setOnMyLocationBtnClick();
     }
 
+    private void initDB() {
+        database = new DatabaseHelper(getContext()).getWritableDatabase();
+    }
+
+    private void initList(View root) {
+        RecyclerView recyclerView = root.findViewById(R.id.recycleViewDays);
+        // Эта установка повышает производительность системы
+        recyclerView.setHasFixedSize(true);
+
+        // Будем работать со встроенным менеджером
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+
+        // Устанавливаем адаптер
+        List<String> listDate = new ArrayList<>();
+        List<String> listTime = new ArrayList<>();
+        List<String> listSky = new ArrayList<>();
+        List<String> listTemp = new ArrayList<>();
+        for (int i = 0; i < FORECAST_NUMBER_OF_TIME; i++) {
+            listDate.add(String.format("%d", i));
+            listTime.add("");
+            listSky.add("");
+            listTemp.add("");
+        }
+
+        adapter = new RecyclerDataAdapterDays(listDate, listTime, listSky, listTemp, this);
+        recyclerView.setAdapter(adapter);
+    }
 
     private void initFonts() {
         weatherFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/weather.ttf"); //если в MainActivity, то getActivity(). не нужен
-        skyTextView.setTypeface(weatherFont);
+        temperatureTextView.setTypeface(weatherFont);
     }
 
     private void setOnChangeTownBtnClick() {
-        changeTownBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Создаем билдер и передаем контекст приложения
-                AlertDialogChangeTown();
-            }
+        changeTownBtn.setOnClickListener(v -> {
+            //saveTownToHistoryIfNeeded
+            saveSharedPrefs();
+            Bundle bundle = new Bundle();
+            bundle.putString("arg", "data");
+            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+            navController.navigate(R.id.action_nav_home_to_nav_options, bundle);
         });
     }
 
-    private void AlertDialogChangeTown() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()); // (MainActivity.this) работать отказался
-        // Вытащим макет диалога
-        final View contentView = getLayoutInflater().inflate(R.layout.alert_dialog_to_know_town, null);
-        // в билдере указываем заголовок окна (можно указывать как ресурс R.string., так и строку)
-        builder.setTitle("Город")
-                // Установим макет диалога (можно устанавливать любой view)
-                .setMessage("Введите название города")
-                // можно указать и пиктограмму
-                .setIcon(R.mipmap.ic_launcher_round)
-                .setView(contentView)
-                // запре на клик вне окна и на выход кнопкой back
-                .setCancelable(false)
-                // устанавливаем кнопку (название кнопки также можно задавать строкой)
-                .setPositiveButton("Готово", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        EditText editText = contentView.findViewById(R.id.editText);
-                        Toast.makeText(getActivity(), String.format("Введен город: %s", editText.getText().toString()), Toast.LENGTH_SHORT)
-                                .show();
-                        townTextView.setText(editText.getText().toString());
-                        setSharedPrefs();
-                        updateWeatherData(editText.getText().toString());
-                    }
-                });
-        AlertDialog alert = builder.create();
-        alert.show();
+    private void setOnMyLocationBtnClick() {
+        myLocation.setOnClickListener(v -> {
+            requestPermissions();
+        });
     }
 
-    private void setSharedPrefs() {
+    private void saveSharedPrefs() {
         final SharedPreferences defaultPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         SharedPreferences.Editor editor = defaultPrefs.edit();
         String text = townTextView.getText().toString();
-        editor.putString(townTextKey, text);
+        editor.putString(Constants.TOWN_TEXT_KEY, text);
+        //NotesTable.addNote(text, database);
         editor.apply();
-
     }
 
-    private void getSharedPrefs() {
+    private void readSharedPrefs() {
         final SharedPreferences defaultPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String text = defaultPrefs.getString(townTextKey, "");
+        String text = defaultPrefs.getString(Constants.TOWN_TEXT_KEY, getString(R.string.region));
         townTextView.setText(text);
+        isPressureActivated = defaultPrefs.getBoolean(Constants.PRESSURE_CHECKBOX_KEY, true);
+        isWindActivated = defaultPrefs.getBoolean(Constants.WIND_CHECKBOX_KEY, true);
     }
 
+    @Override
+    public void showCurrentWeatherData(WeatherRequestRestModel model) {
+        String location = model.name + ", " + model.sys.country;
+        townTextView.setText(location);
+        saveLocationToDataBaseIfNeeded (location);
 
-    public void showAlertDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()); // (MainActivity.this) работать отказался
-        builder.setTitle(R.string.exclamation)
-                .setMessage(R.string.press_button)
-                .setIcon(R.mipmap.ic_launcher_round)
-                .setCancelable(false)
-                .setPositiveButton(R.string.button,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                Toast.makeText(getActivity(), "Кнопка нажата", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-        AlertDialog alert = builder.create();
-        alert.show();
-    }
+        if (isPressureActivated) {
+            int pressureInteger = (int) Math.round(model.main.pressure * FACTOR_HECTOPASCAL_TO_MM_RT_ST);
+            pressureTextView.setText(pressureInteger + " " + getString(R.string.pressure_units));
+        }
 
+        if (isWindActivated) {
+            int windInteger = (int) Math.round(model.wind.speed);
+            windTextView.setText(windInteger + " " + getString(R.string.wind_units));
+        }
 
-    private void updateWeatherData(final String city) {
-        OpenWeatherRepo.getSingleton().getAPI().loadWeather(city,
-                "762ee61f52313fbd10a4eb54ae4d4de2", "metric")
-                .enqueue(new Callback<WeatherRequestRestModel>() {
-                    @Override
-                    public void onResponse(@NonNull Call<WeatherRequestRestModel> call,
-                                           @NonNull Response<WeatherRequestRestModel> response) {
-                        if (response.body() != null && response.isSuccessful()) {
-                            renderWeather(response.body());
-                        } else {
-                            //Похоже, код у нас не в диапазоне [200..300) и случилась ошибка
-                            //обрабатываем ее
-                            if (response.code() == 500) {
-                                //ой, случился Internal Server Error. Решаем проблему
-                            } else if (response.code() == 401) {
-                                //не авторизованы, что-то с этим делаем.
-                                //например, открываем страницу с логинкой
-                            }// и так далее
-                        }
-                    }
-                    //сбой при интернет подключении
-                    @Override
-                    public void onFailure(Call<WeatherRequestRestModel> call, Throwable t) {
-//                        Toast.makeText(getBaseContext(), getString(R.string.network_error),
-//                                Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
-
-    private void renderWeather(WeatherRequestRestModel model) {
-
-        townTextView.setText(model.name + ", " + model.sys.country);
-        temperatureTextView.setText("" + model.main.temp);
-        pressureTextView.setText(model.main.pressure + "mm");
-        windTextView.setText(model.wind.speed + "m/s");
+        int temperature = (int) Math.round(model.main.temp);
+        temperatureTextView.setText(addSignToTemperature(temperature));
 
         // далее установка картинки погоды
-        String skyPictureName;
-        final int GROUP_THUNDERSTORM = 2;
-        final int GROUP_DRIZZLE = 3;
-        final int DRIZZLE_LIGHT = 301;
-        final int GROUP_RAIN = 5;
-        final int RAIN_LIGHT = 501;
-        final int GROUP_SNOW = 6;
-        final int GROUP_FOG = 7;
-        final int GROUP_CLOUDS = 8;
-        final int CLOUDS_CLEAR = 800;
-        final int CLOUDS_FEW = 801;
-        final int CLOUDS_BROKEN = 802;
-
         long sunrise = model.sys.sunrise * 1000;
         long sunset = model.sys.sunset * 1000;
-
         int idWeather = model.weather[0].id;
+
+        String skyPictureName = defineSkyWeatherPicture(sunrise, sunset, idWeather);
+
+        Resources res = getResources();
+        int resID = res.getIdentifier(skyPictureName, "drawable", getContext().getPackageName());
+        skyImageView.setImageResource(resID);
+    }
+
+    private void saveLocationToDataBaseIfNeeded(String location) {
+        List<String> listAllSavedLocations = new ArrayList<>(NotesTable.getAllNotes(database));
+        if (listAllSavedLocations.contains(location) == false) NotesTable.addNote(location, database);
+    }
+
+    @Override
+    public void show5DaysForecastData(ForecastLevel1_RequestModel model) {
+
+        long currentTime = new Date().getTime();
+        lastUpdateTextView.setText(convertMilliSecondsToFormattedDate(currentTime) + "  " + convertMilliSecondsToFormattedTime(currentTime));
+
+        for (int i = 0; i < 40; i++) {
+            int forecastTemperatureInteger = (int) Math.round((model.list.get(i).main.temp));
+            String forecastTemperatureString = addSignToTemperature(forecastTemperatureInteger);
+
+            long sunriseAfterMidNight = (model.city.sunrise * 1000) % TWENTY_FOUR_HOURS_IN_MILLISECONDS;
+            long sunsetAfterMidNight = (model.city.sunset * 1000) % TWENTY_FOUR_HOURS_IN_MILLISECONDS;
+            long forecastDateAndTime = (model.list.get(i).dt * 1000);
+            long forecastTimeAfterMidNight = forecastDateAndTime % TWENTY_FOUR_HOURS_IN_MILLISECONDS;
+
+            int idWeather = model.list.get(i).weather.get(0).id;
+            String forecastIcon = defineSkyWeatherIcon(sunriseAfterMidNight, sunsetAfterMidNight, forecastTimeAfterMidNight, idWeather);
+
+            String forecastDate = convertMilliSecondsToFormattedDate(forecastDateAndTime + MSK_TIME_THREE_OUR_PLUS);
+            String forecastTime = convertMilliSecondsToFormattedTime(forecastDateAndTime + MSK_TIME_THREE_OUR_PLUS);
+            adapter.updateItem(forecastDate, forecastTime, forecastIcon, forecastTemperatureString, i);
+        }
+    }
+
+    public String defineSkyWeatherPicture(long sunrise, long sunset, int idWeather) {
+        String skyPictureName;
+
         int idWeatherGroup = idWeather / 100;
 
         skyPictureName = "z_snow_white";
@@ -262,11 +309,212 @@ public class HomeFragment extends Fragment {
                 }
             }
         }
-        Resources res = getResources();
-        int resID = res.getIdentifier(skyPictureName, "drawable", getContext().getPackageName());
-        skyImageView.setImageResource(resID);
+        return skyPictureName;
     }
 
+    public String defineSkyWeatherIcon(long sunrise, long sunset, long forecastTime, int idWeather) {
+        String icon = "";
 
+        int idWeatherGroup = idWeather / 100;
 
+        switch (idWeatherGroup) {
+            case GROUP_THUNDERSTORM: {
+                icon = getString(R.string.weather_thunder);
+                break;
+            }
+            case GROUP_DRIZZLE: {
+                if (idWeather <= DRIZZLE_LIGHT) {
+                    icon = getString(R.string.weather_drizzle);
+                } else {
+                    icon = getString(R.string.weather_rainy);
+                }
+                break;
+            }
+            case GROUP_RAIN: {
+                if (idWeather <= RAIN_LIGHT) {
+                    icon = getString(R.string.weather_drizzle);
+                } else {
+                    icon = getString(R.string.weather_rainy);
+                }
+                break;
+            }
+            case GROUP_SNOW: {
+                icon = getString(R.string.weather_snowy);
+                break;
+            }
+            case GROUP_FOG: {
+                icon = getString(R.string.weather_foggy);
+                break;
+            }
+            case GROUP_CLOUDS: {
+                if (idWeather > CLOUDS_BROKEN) {
+                    icon = getString(R.string.weather_cloudy);
+                    break;
+                }
+                if (idWeather == CLOUDS_BROKEN) {
+                    icon = getString(R.string.weather_cloudy);
+                    break;
+                }
+                if (idWeather == CLOUDS_FEW) {
+                    // для дневного времени отображается солнце, для ночного - луна
+                    if (forecastTime >= sunrise && forecastTime < sunset) {
+                        icon = getString(R.string.weather_sunny);
+                    } else {
+                        icon = getString(R.string.weather_clear_night);
+                    }
+                    break;
+                }
+                if (idWeather == CLOUDS_CLEAR) {
+                    if (forecastTime >= sunrise && forecastTime < sunset) {
+                        icon = getString(R.string.weather_sunny);
+                    } else {
+                        icon = getString(R.string.weather_clear_night);
+                    }
+                }
+            }
+        }
+        return icon;
+    }
+
+    public static String addSignToTemperature (int temperature) {
+        String textTemperature = Integer.toString(temperature);
+        if (temperature > 0) textTemperature = "+" + temperature;
+        else if (temperature < 0) textTemperature = "-" + temperature;
+        return textTemperature;
+    }
+
+    public static String convertMilliSecondsToFormattedDate(long milliSeconds){
+        String dateFormat = "dd-MM-yyyy";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(milliSeconds);
+        return simpleDateFormat.format(calendar.getTime());
+    }
+
+    public static String convertMilliSecondsToFormattedTime(long milliSeconds){
+        String dateFormat = "HH:mm";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(milliSeconds);
+        return simpleDateFormat.format(calendar.getTime());
+    }
+
+    private void requestPermissions() {
+        // Проверим, есть ли Permission’ы, и если их нет, запрашиваем их у
+        // пользователя
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // Запрашиваем координаты
+            requestLocation();
+        } else {
+            // Permission’ов нет, запрашиваем их у пользователя
+            requestLocationPermissions();
+        }
+    }
+
+    private void requestLocation() {
+        // Если Permission’а всё- таки нет, просто выходим: приложение не имеет
+        // смысла
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            return;
+        // Получаем менеджер геолокаций
+
+        LocationManager locationManager = (LocationManager)getContext().getSystemService(Context.LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_COARSE);
+
+        // Получаем наиболее подходящий провайдер геолокации по критериям.
+        // Но определить, какой провайдер использовать, можно и самостоятельно.
+        // В основном используются LocationManager.GPS_PROVIDER или
+        // LocationManager.NETWORK_PROVIDER, но можно использовать и
+        // LocationManager.PASSIVE_PROVIDER - для получения координат в
+        // пассивном режиме
+        String provider = locationManager.getBestProvider(criteria, true);
+        if (provider != null) {
+            // Будем получать геоположение через каждые 10 секунд или каждые
+            // 10 метров
+            locationManager.requestLocationUpdates(provider, 10000, 10, new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    double lat = location.getLatitude(); // Широта
+                    String latitude = Double.toString(lat);
+                    townTextView.setText(latitude);
+
+                    double lng = location.getLongitude(); // Долгота
+                    String longitude = Double.toString(lng);
+                    //textLongitude.setText(longitude);
+
+                    String accuracy = Float.toString(location.getAccuracy());   // Точность
+
+                    LatLng currentPosition = new LatLng(lat, lng);
+                    getAddress(currentPosition);
+//                    currentMarker.setPosition(currentPosition);
+//                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, (float)12));
+                }
+
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+                }
+
+                @Override
+                public void onProviderEnabled(String provider) {
+                }
+
+                @Override
+                public void onProviderDisabled(String provider) {
+                }
+            });
+        }
+    }
+
+    // Получаем адрес по координатам
+    private void getAddress(final LatLng location){
+        final Geocoder geocoder = new Geocoder(getContext());
+        // Поскольку Geocoder работает по интернету, создаём отдельный поток
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final List<Address> addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1);
+                    townTextView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            townTextView.setText(addresses.get(0).getAddressLine(0));
+                        }
+                    });
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    // Запрашиваем Permission’ы для геолокации
+    private void requestLocationPermissions() {
+        if (!ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.CALL_PHONE)) {
+            // Запрашиваем эти два Permission’а у пользователя
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                    },
+                    PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    // Результат запроса Permission’а у пользователя:
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == PERMISSION_REQUEST_CODE) {   // Запрошенный нами
+            // Permission
+            if (grantResults.length == 2 &&
+                    (grantResults[0] == PackageManager.PERMISSION_GRANTED || grantResults[1] == PackageManager.PERMISSION_GRANTED)) {
+                // Все препоны пройдены и пермиссия дана
+                // Запросим координаты
+                requestLocation();
+            }
+        }
+    }
 }
