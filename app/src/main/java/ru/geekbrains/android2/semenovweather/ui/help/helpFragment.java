@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.google.android.material.button.MaterialButton;
 
@@ -33,18 +35,24 @@ public class helpFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         goBackMainActivityBtn = view.findViewById(R.id.goBackHomeFragmentBtn);
         goUrlBtn = view.findViewById(R.id.goUrlButton);
-        setOnGoBackToOptionsSelectActivityBtnClick();
+        setOnGoOptionsFragmentBtnClick();
         setOnGoUrlBtnClick();
     }
 
-    private void setOnGoBackToOptionsSelectActivityBtnClick() {
+    private void setOnGoOptionsFragmentBtnClick() {
         goBackMainActivityBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SelectOptionsFragment selectOptionsFragment = new SelectOptionsFragment();
-                FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-                transaction.replace(R.id.nav_host_fragment_container, selectOptionsFragment);
-                transaction.commit();
+                Bundle bundle = new Bundle();
+                bundle.putString("arg", "data");
+                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                navController.navigate(R.id.action_nav_help_to_nav_options, bundle);
+
+                // вариант для перехода без навигитора
+//                SelectOptionsFragment selectOptionsFragment = new SelectOptionsFragment();
+//                FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+//                transaction.replace(R.id.nav_host_fragment_container, selectOptionsFragment);
+//                transaction.commit();
             }
         });
     }

@@ -35,5 +35,9 @@
         android:id="@+id/nav_help"
         android:name="ru.geekbrains.android2.semenovweather.ui.help.helpFragment"
         android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_help" />
+        tools:layout="@layout/fragment_help" >
+        <action
+            android:id="@+id/action_nav_help_to_nav_options"
+            app:destination="@id/nav_options" />
+    </fragment>
 </navigation>
